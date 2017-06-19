@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-import json
 from temporary import temp_dir
 
 import aiida
 import pytest
-import psycopg2
 from pgtest.pgtest import PGTest
 
 @pytest.fixture(scope='session')
