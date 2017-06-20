@@ -55,8 +55,9 @@ def monkeypatch_config(pg_port, repo_path):
 def run_setup():
     from aiida.cmdline.verdilib import Setup
     # Python 3: contextlib.redirect_stdout
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull), redirect_stdin(io.StringIO('N\n')):
-        Setup().run()
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+        with redirect_stdin(io.StringIO('N\n')):
+            Setup().run()
 
 def setup_localhost(tmpfolder):
     class ComputerSetupInput:
@@ -79,6 +80,7 @@ def setup_localhost(tmpfolder):
                 raise EOFError
 
     from aiida.cmdline.commands.computer import Computer
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull), redirect_stdin(ComputerSetupInput(os.path.join(tmpfolder, 'aiida_run'))):
-        Computer().computer_setup()
-        Computer().computer_configure('localhost')
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+        with redirect_stdin(ComputerSetupInput(os.path.join(tmpfolder, 'aiida_run'))):
+            Computer().computer_setup()
+            Computer().computer_configure('localhost')
