@@ -35,9 +35,13 @@ def aiidadb():
         # avoid double load_dbenv
         aiida.load_dbenv = lambda: None
         run_setup()
-        yield
+        # setup_localhost(str(td))
+        # from aiida.cmdline.verdilib import exec_from_cmdline
+        # exec_from_cmdline(['verdi', 'computer', 'list'])
+        # yield
 
 def monkeypatch_config(pg_port, repo_path):
+    aiida.common.AIIDA_CONFIG_FOLDER = os.path.abspath(repo_path)
     def get_test_config():
         return {
             "default_profiles": {"daemon": "default", "verdi": "default"},
@@ -48,10 +52,34 @@ def monkeypatch_config(pg_port, repo_path):
             }
         }
     aiida.common.setup.get_config = get_test_config
-    aiida.common.AIIDA_CONFIG_FOLDER = os.path.abspath(repo_path)
 
 def run_setup():
     from aiida.cmdline.verdilib import Setup
     # Python 3: contextlib.redirect_stdout
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull), redirect_stdin(io.StringIO('N\n')):
         Setup().run()
+
+def setup_localhost(tmpfolder):
+    class ComputerSetupInput:
+        """
+        Class to mock the input for computer setup. This is needed because io.StringIO cannot create the EOFError needed to end the multiline inputs.
+        """
+        def __init__(self, run_path):
+            self.input = [
+                'localhost', 'localhost', 'Local Computer', 'True', 'local', 'direct',
+                run_path, 'mpirun -np {tot_num_mpiprocs}' , '1', None, None
+            ]
+
+        def readline(self):
+            try:
+                res = self.input.pop(0)
+                if res is None:
+                    raise EOFError
+                return res
+            except IndexError:
+                raise EOFError
+
+    from aiida.cmdline.commands.computer import Computer
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull), redirect_stdin(ComputerSetupInput(os.path.join(tmpfolder, 'aiida_run'))):
+        Computer().computer_setup()
+        Computer().computer_configure('localhost')
