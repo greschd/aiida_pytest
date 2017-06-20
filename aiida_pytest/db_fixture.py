@@ -13,6 +13,10 @@ def aiidadb():
     with PGTest() as pgt, temp_dir() as td:
         monkeypatch_config(pg_port=pgt.port, repo_path=str(td))
         aiida.load_dbenv()
+        # from aiida.cmdline.verdilib import setup
+        # Setup().run()
+        # from aiida.cmdline.commands.code import Code
+        # Code().code_setup()
         yield
 
 def monkeypatch_config(pg_port, repo_path):
@@ -26,3 +30,4 @@ def monkeypatch_config(pg_port, repo_path):
             }
         }
     aiida.common.setup.get_config = get_test_config
+    aiida.common.AIIDA_CONFIG_FOLDER = os.path.abspath(repo_path)
