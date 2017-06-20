@@ -31,17 +31,16 @@ def redirect_stdin(target):
 def aiidadb():
     with PGTest() as pgt, temp_dir() as td:
         monkeypatch_config(pg_port=pgt.port, repo_path=str(td))
-        aiida.load_dbenv()
+        run_setup()
         # avoid double load_dbenv
         aiida.load_dbenv = lambda: None
-        run_setup()
-        # setup_localhost(str(td))
-        # from aiida.cmdline.verdilib import exec_from_cmdline
-        # exec_from_cmdline(['verdi', 'computer', 'list'])
-        # yield
+        setup_localhost(str(td))
+        from aiida.cmdline.verdilib import exec_from_cmdline
+        exec_from_cmdline(['verdi', 'computer', 'list'])
+        yield
 
 def monkeypatch_config(pg_port, repo_path):
-    aiida.common.AIIDA_CONFIG_FOLDER = os.path.abspath(repo_path)
+    aiida.common.setup.AIIDA_CONFIG_FOLDER = os.path.abspath(repo_path)
     def get_test_config():
         return {
             "default_profiles": {"daemon": "default", "verdi": "default"},
