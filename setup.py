@@ -3,7 +3,17 @@
 setup: usage: pip install -e .[graphs]
 """
 
+import sys
 from setuptools import setup, find_packages
+
+requirements = [
+    'aiida-core',
+    'pytest',
+    'temporary',
+    'pyyaml'
+]
+if sys.version_info < (3,):
+    requirements += ['chainmap']
 
 if __name__ == '__main__':
     setup(
@@ -25,9 +35,5 @@ if __name__ == '__main__':
         keywords='pytest aiida workflows',
         packages=find_packages(exclude=['aiida']),
         include_package_data=True,
-        install_requires=[
-            'aiida-core',
-            'pytest',
-            'pyyaml'
-        ],
+        install_requires=requirements,
     )
