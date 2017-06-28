@@ -28,6 +28,7 @@ if __name__ == '__main__':
         install_requires=[
             'aiida-core',
             'pytest',
+            'aiida-pytest',
             'pgtest',
             'temporary',
             'pyyaml'

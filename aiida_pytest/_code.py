@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+
 import pytest
 
 from aiida.cmdline.verdilib import Code
@@ -30,6 +32,7 @@ def setup_code(aiidadb):
             None,
             None
         ])
-        with redirect_stdin(code_input):
-            Code().code_setup()
+        with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+            with redirect_stdin(code_input):
+                Code().code_setup()
     return inner

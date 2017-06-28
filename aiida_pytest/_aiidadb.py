@@ -19,23 +19,25 @@ __all__ = ['aiidadb']
 @pytest.fixture(scope='session')
 def aiidadb():
     with PGTest() as pgt, temp_dir() as td:
-        monkeypatch_config(pg_port=pgt.port, repo_path=str(td))
+        aiida_folder = os.path.join(os.path.abspath(str(td)), '.aiida')
+        monkeypatch_config(pg_port=pgt.port, aiida_folder=aiida_folder)
         run_setup()
         # avoid double load_dbenv
         aiida.load_dbenv = lambda: None
-        setup_localhost(str(td))
-        from aiida.cmdline.verdilib import exec_from_cmdline
-        exec_from_cmdline(['verdi', 'computer', 'list'])
+        setup_localhost(aiida_folder)
+        # from aiida.cmdline.verdilib import exec_from_cmdline
+        # exec_from_cmdline(['verdi', 'computer', 'list'])
+        # restart_daemon()
         yield
 
-def monkeypatch_config(pg_port, repo_path):
-    aiida.common.setup.AIIDA_CONFIG_FOLDER = os.path.abspath(repo_path)
+def monkeypatch_config(pg_port, aiida_folder):
+    aiida.common.setup.AIIDA_CONFIG_FOLDER = os.path.abspath(aiida_folder)
     def get_test_config():
         return {
             "default_profiles": {"daemon": "default", "verdi": "default"},
             "profiles": {
                 "default": {
-                    "AIIDADB_ENGINE": "postgresql_psycopg2", "AIIDADB_PASS": "", "AIIDADB_NAME": "postgres", "AIIDADB_HOST": "localhost", "AIIDADB_BACKEND": "django", "default_user_email": "aiida@localhost", "AIIDADB_USER": "postgres", "AIIDADB_PORT": pg_port, "AIIDADB_REPOSITORY_URI": 'file://' + os.path.join(repo_path, '.aiida', 'repository')
+                    "AIIDADB_ENGINE": "postgresql_psycopg2", "AIIDADB_PASS": "", "AIIDADB_NAME": "postgres", "AIIDADB_HOST": "localhost", "AIIDADB_BACKEND": "django", "default_user_email": "aiida@localhost", "AIIDADB_USER": "postgres", "AIIDADB_PORT": pg_port, "AIIDADB_REPOSITORY_URI": 'file://' + os.path.join(aiida_folder, 'repository')
                 }
             }
         }
@@ -59,3 +61,7 @@ def setup_localhost(tmpfolder):
         with redirect_stdin(computer_setup_input):
             Computer().computer_setup()
             Computer().computer_configure('localhost')
+
+def restart_daemon():
+    from aiida.cmdline.commands.daemon import Daemon
+    Daemon().daemon_restart()
