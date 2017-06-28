@@ -29,6 +29,7 @@ if __name__ == '__main__':
             'aiida-core',
             'pytest',
             'pgtest',
-            'temporary'
+            'temporary',
+            'pyyaml'
         ],
     )
