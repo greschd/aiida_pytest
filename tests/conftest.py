@@ -2,4 +2,4 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from aiida_pytest.db_fixture import *
+from aiida_pytest import *

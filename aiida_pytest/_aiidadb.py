@@ -11,7 +11,10 @@ import aiida
 import pytest
 from pgtest.pgtest import PGTest
 
+from ._input_mock import InputMock
 from ._contextmanagers import redirect_stdin, redirect_stdout
+
+__all__ = ['aiidadb']
 
 @pytest.fixture(scope='session')
 def aiidadb():
@@ -46,27 +49,13 @@ def run_setup():
             Setup().run()
 
 def setup_localhost(tmpfolder):
-    class ComputerSetupInput:
-        """
-        Class to mock the input for computer setup. This is needed because io.StringIO cannot create the EOFError needed to end the multiline inputs.
-        """
-        def __init__(self, run_path):
-            self.input = [
-                'localhost', 'localhost', 'Local Computer', 'True', 'local', 'direct',
-                run_path, 'mpirun -np {tot_num_mpiprocs}' , '1', None, None
-            ]
-
-        def readline(self):
-            try:
-                res = self.input.pop(0)
-                if res is None:
-                    raise EOFError
-                return res
-            except IndexError:
-                raise EOFError
-
     from aiida.cmdline.commands.computer import Computer
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        with redirect_stdin(ComputerSetupInput(os.path.join(tmpfolder, 'aiida_run'))):
+        run_path = os.path.join(tmpfolder, 'aiida_run')
+        computer_setup_input = InputMock(input=[
+            'localhost', 'localhost', 'Local Computer', 'True', 'local', 'direct',
+            run_path, 'mpirun -np {tot_num_mpiprocs}' , '1', None, None
+        ])
+        with redirect_stdin(computer_setup_input):
             Computer().computer_setup()
             Computer().computer_configure('localhost')
