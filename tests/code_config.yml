@@ -1,0 +1,7 @@
+code:
+    -   label: 'echo'
+        description: 'echo'
+        local: False
+        default_plugin: 'simpleplugins.templatereplacer'
+        remote_computer: 'localhost'
+        remote_abspath: '/bin/echo'

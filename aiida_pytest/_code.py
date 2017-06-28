@@ -10,7 +10,7 @@ from ._contextmanagers import redirect_stdin, redirect_stdout
 
 __all__ = ['setup_code']
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def setup_code(aiidadb):
     def inner(
         label,
