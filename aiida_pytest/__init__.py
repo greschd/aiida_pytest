@@ -1,3 +1,4 @@
-from ._aiidadb import *
-from ._code import *
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from ._config import *
