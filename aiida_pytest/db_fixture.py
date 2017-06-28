@@ -5,27 +5,13 @@ from __future__ import division, print_function, unicode_literals
 
 import io
 import os
-import sys
-import contextlib
 from temporary import temp_dir
 
 import aiida
 import pytest
 from pgtest.pgtest import PGTest
 
-@contextlib.contextmanager
-def redirect_stdout(target):
-    original = sys.stdout
-    sys.stdout = target
-    yield
-    sys.stdout = original
-
-@contextlib.contextmanager
-def redirect_stdin(target):
-    original = sys.stdin
-    sys.stdin = target
-    yield
-    sys.stdin = original
+from ._contextmanagers import redirect_stdin, redirect_stdout
 
 @pytest.fixture(scope='session')
 def aiidadb():
