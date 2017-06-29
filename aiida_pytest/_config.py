@@ -70,3 +70,6 @@ def reset_config_after_run():
     yield
     with open(config_file, 'w') as f:
         json.dump(config_old, f)
+    from aiida.cmdline.verdilib import Daemon
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+        Daemon().daemon_stop()
