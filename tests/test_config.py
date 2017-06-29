@@ -4,14 +4,18 @@
 import os
 
 import aiida
+import pytest
 
-def test_configure_from_file(configure_from_file):
+@pytest.fixture(scope='session')
+def config(configure_from_file):
     configure_from_file(os.path.abspath('config.yml'))
+
+def test_configure_from_file(config):
     from aiida.orm.user import User
     user = User.get_all_users()[0]
     assert user.first_name == 'AiiDA'
 
-def test_db_flushed(configure_from_file):
+def test_db_flushed(config):
     from aiida.orm.data.base import Str
     test_string = 'this string should not be present when the test run starts'
     tag = 'Test string tag'
@@ -25,3 +29,7 @@ def test_db_flushed(configure_from_file):
     str_obj = Str(test_string)
     str_obj.label = tag
     str_obj.store()
+
+# def test_daemon_running(config):
+#     from aiida.cmdline.verdilib import Daemon
+#     print(Daemon().daemon_status())

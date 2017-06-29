@@ -32,6 +32,10 @@ def configure(reset_config_after_run, flush_db_after_run):
             with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
                 run_setup(repo_default=str(td), **config['setup'])
 
+            from aiida.cmdline.verdilib import Daemon
+            with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+                Daemon().daemon_restart()
+
             from ._computer import setup_computer
             computers = config.get('computers', [])
             for computer_kwargs in computers:
@@ -40,6 +44,7 @@ def configure(reset_config_after_run, flush_db_after_run):
             codes = config.get('codes', [])
             for code_kwargs in codes:
                 setup_code(**code_kwargs)
+
         yield inner
 
 @pytest.fixture(scope='session')

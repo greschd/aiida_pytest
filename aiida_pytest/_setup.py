@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from aiida.cmdline.verdilib import setup as _setup
+from aiida.cmdline.verdilib import Profile
 
 from ._chainmap import ChainMap
 
@@ -20,3 +21,5 @@ def run_setup(repo_default, **kwargs):
     }
 
     _setup(**ChainMap(kwargs, defaults))
+    Profile().profile_setdefault('daemon', kwargs['profile'])
+    Profile().profile_setdefault('verdi', kwargs['profile'])
