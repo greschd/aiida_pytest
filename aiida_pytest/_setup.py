@@ -6,7 +6,7 @@ from aiida.cmdline.verdilib import Profile
 
 from ._chainmap import ChainMap
 
-def run_setup(repo_default, **kwargs):
+def run_setup(**kwargs):
     defaults = {
         'backend': 'django',
         'email': 'aiida@localhost',
@@ -15,9 +15,7 @@ def run_setup(repo_default, **kwargs):
         'institution': 'Test Lab',
         'non_interactive': True,
         'only_config': False,
-        'db_host': 'localhost',
-        'db_port': '5432',
-        'repo': repo_default
+        'db_host': 'localhost'
     }
 
     _setup(**ChainMap(kwargs, defaults))

@@ -1,8 +1,5 @@
 setup:
     profile: test_aiida_pytest
-    db_name: test_aiida_pytest
-    db_user: test_aiida_pytest
-    db_pass: '1234'
 
 computers:
     - name: localhost

@@ -9,6 +9,7 @@ from setuptools import setup, find_packages
 requirements = [
     'aiida-core',
     'pytest',
+    'pgtest',
     'temporary',
     'pyyaml',
 ]
