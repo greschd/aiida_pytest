@@ -14,6 +14,7 @@ import json
 import yaml
 import temporary
 import aiida
+import django
 import pytest
 
 from ._input_mock import InputMock
@@ -40,13 +41,24 @@ def configure_from_file(configure):
     return inner
 
 @pytest.fixture(scope='session')
-def configure(reset_config_after_run):
+def configure(reset_config_after_run, flush_db_after_run):
     with temporary.temp_dir() as td:
         def inner(config):
             with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
                 run_setup(repo_default=str(td), **config['setup'])
         yield inner
 
+@pytest.fixture(scope='session')
+def flush_db_after_run():
+    yield
+    from django.db import connections
+    from django.core.management import call_command
+
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+        for db in connections:
+            call_command('flush', verbosity=0, interactive=False, database=db)
+        for conn in connections.all():
+            conn.close()
 
 def run_setup(repo_default, **kwargs):
     defaults = {
