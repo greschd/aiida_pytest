@@ -5,10 +5,6 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import io
-try:
-    from collections import ChainMap
-except ImportError:
-    from chainmap import ChainMap
 import json
 
 import yaml
@@ -17,20 +13,8 @@ import aiida
 import django
 import pytest
 
-from ._input_mock import InputMock
+from ._input_helper import InputHelper
 from ._contextmanagers import redirect_stdin, redirect_stdout
-
-@pytest.fixture(scope='session')
-def reset_config_after_run():
-    config_file = os.path.join(
-        os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER),
-        'config.json'
-    )
-    with open(config_file, 'r') as f:
-        config_old = json.load(f)
-    yield
-    with open(config_file, 'w') as f:
-        json.dump(config_old, f)
 
 @pytest.fixture(scope='session')
 def configure_from_file(configure):
@@ -44,8 +28,18 @@ def configure_from_file(configure):
 def configure(reset_config_after_run, flush_db_after_run):
     with temporary.temp_dir() as td:
         def inner(config):
+            from ._setup import run_setup
             with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
                 run_setup(repo_default=str(td), **config['setup'])
+
+            from ._computer import setup_computer
+            computers = config.get('computers', [])
+            for computer_kwargs in computers:
+                setup_computer(**computer_kwargs)
+            from ._code import setup_code
+            codes = config.get('codes', [])
+            for code_kwargs in codes:
+                setup_code(**code_kwargs)
         yield inner
 
 @pytest.fixture(scope='session')
@@ -60,18 +54,14 @@ def flush_db_after_run():
         for conn in connections.all():
             conn.close()
 
-def run_setup(repo_default, **kwargs):
-    defaults = {
-        'backend': 'django',
-        'email': 'aiida@localhost',
-        'first_name': 'Test',
-        'last_name': 'User',
-        'institution': 'Test Lab',
-        'non_interactive': True,
-        'only_config': False,
-        'db_host': 'localhost',
-        'db_port': '5432',
-        'repo': repo_default
-    }
-    from aiida.cmdline.verdilib import setup
-    setup(**ChainMap(kwargs, defaults))
+@pytest.fixture(scope='session')
+def reset_config_after_run():
+    config_file = os.path.join(
+        os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER),
+        'config.json'
+    )
+    with open(config_file, 'r') as f:
+        config_old = json.load(f)
+    yield
+    with open(config_file, 'w') as f:
+        json.dump(config_old, f)

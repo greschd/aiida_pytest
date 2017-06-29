@@ -10,7 +10,7 @@ requirements = [
     'aiida-core',
     'pytest',
     'temporary',
-    'pyyaml'
+    'pyyaml',
 ]
 if sys.version_info < (3,):
     requirements += ['chainmap']

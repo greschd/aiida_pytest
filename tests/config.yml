@@ -3,3 +3,18 @@ setup:
     db_name: test_aiida_pytest
     db_user: test_aiida_pytest
     db_pass: '1234'
+
+computers:
+    - name: localhost
+      hostname: localhost
+      description: localhost
+      transport: local
+      scheduler: direct
+      work_directory: /tmp/test_aiida_pytest_run
+
+codes:
+    - label: ls
+      description: ls
+      default_plugin: simpleplugins.templatereplacer
+      remote_computer: localhost
+      remote_abspath: /bin/ls

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class InputMock:
+class InputHelper:
     """
     Class to mock a given input. This is needed because io.StringIO cannot create the EOFError needed to end multiline inputs in AiiDA (Ctrl+D).
     """
