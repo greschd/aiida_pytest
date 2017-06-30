@@ -6,6 +6,7 @@ from __future__ import division, print_function, unicode_literals
 import os
 import io
 import json
+import shutil
 from contextlib import contextmanager
 
 import yaml
@@ -52,15 +53,11 @@ def configure():
 
 @contextmanager
 def reset_config_after_run():
-    config_file = os.path.join(
-        os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER),
-        'config.json'
-    )
-    with open(config_file, 'r') as f:
-        config_old = json.load(f)
+    config_folder = os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER)
+    config_save_folder = os.path.join(os.path.dirname(config_folder), '.aiida~')
+    shutil.copytree(config_folder, config_save_folder)
     yield
-    with open(config_file, 'w') as f:
-        json.dump(config_old, f)
+    os.rename(config_save_folder, config_folder)
 
 @contextmanager
 def handle_daemon():
