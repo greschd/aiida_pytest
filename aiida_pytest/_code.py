@@ -6,7 +6,7 @@ import os
 from aiida.cmdline.verdilib import Code
 
 from ._input_helper import InputHelper
-from ._contextmanagers import redirect_stdin, redirect_stdout
+from .contextmanagers import redirect_stdin, redirect_stdout
 
 def setup_code(
     label,

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import io
 import os
 
 import aiida
 import pytest
+
+from aiida_pytest.contextmanagers import redirect_stdout
 
 def test_configure_from_file(configure):
     from aiida.orm.user import User
@@ -26,6 +29,9 @@ def test_db_flushed(configure):
     str_obj.label = tag
     str_obj.store()
 
-# def test_daemon_running(config):
-#     from aiida.cmdline.verdilib import Daemon
-#     print(Daemon().daemon_status())
+def test_daemon_running(configure):
+    from aiida.cmdline.verdilib import Daemon
+    output = io.BytesIO()
+    with redirect_stdout(output):
+        Daemon().daemon_status()
+    assert '## Found 1 process running:' in output.getvalue()

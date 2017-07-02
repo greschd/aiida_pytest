@@ -4,7 +4,6 @@
 from __future__ import division, print_function, unicode_literals
 
 import os
-import io
 import json
 import shutil
 from contextlib import contextmanager
@@ -17,7 +16,7 @@ import django
 import pytest
 
 from ._input_helper import InputHelper
-from ._contextmanagers import redirect_stdin, redirect_stdout
+from .contextmanagers import redirect_stdin, redirect_stdout
 
 @pytest.fixture(scope='session')
 def configure():
@@ -57,6 +56,7 @@ def reset_config_after_run():
     config_save_folder = os.path.join(os.path.dirname(config_folder), '.aiida~')
     shutil.copytree(config_folder, config_save_folder)
     yield
+    shutil.rmtree(config_folder)
     os.rename(config_save_folder, config_folder)
 
 @contextmanager
