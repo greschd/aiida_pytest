@@ -55,15 +55,21 @@ def reset_config_after_run():
     config_folder = os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER)
     config_save_folder = os.path.join(os.path.dirname(config_folder), '.aiida~')
     shutil.copytree(config_folder, config_save_folder)
-    yield
-    shutil.rmtree(config_folder)
-    os.rename(config_save_folder, config_folder)
+    try:
+        yield
+    except Exception as e:
+        shutil.rmtree(config_folder)
+        os.rename(config_save_folder, config_folder)
+        raise e
 
 @contextmanager
 def handle_daemon():
     from aiida.cmdline.verdilib import Daemon
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         Daemon().daemon_restart()
-    yield
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        Daemon().daemon_stop()
+    try:
+        yield
+    except Exception as e:
+        with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+            Daemon().daemon_stop()
+        raise e
