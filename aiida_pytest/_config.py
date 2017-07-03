@@ -29,12 +29,12 @@ def configure():
             from ._setup import run_setup
             with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
                 run_setup(
+                    profile='test_profile',
                     db_user='postgres',
                     db_port=pgt.port,
                     db_name='postgres',
                     db_pass='',
-                    repo=str(td),
-                    **config['setup']
+                    repo=str(td)
                 )
 
             from ._computer import setup_computer

@@ -1,6 +1,3 @@
-setup:
-    profile: test_aiida_pytest
-
 computers:
     - name: localhost
       hostname: localhost
