@@ -23,7 +23,7 @@ def configure():
     with open(os.path.abspath('config.yml'), 'r') as f:
         config = yaml.load(f)
 
-    with temporary.temp_dir() as td, PGTest() as pgt:
+    with temporary.temp_dir() as td, PGTest(max_connections=100) as pgt:
         with reset_config_after_run():
             # flush_db()
             from ._setup import run_setup
