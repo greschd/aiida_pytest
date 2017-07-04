@@ -25,7 +25,6 @@ def configure():
 
     with temporary.temp_dir() as td, PGTest(max_connections=100) as pgt:
         with reset_config_after_run():
-            # flush_db()
             from ._setup import run_setup
             with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
                 run_setup(
@@ -55,6 +54,7 @@ def reset_config_after_run():
     config_folder = os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER)
     config_save_folder = os.path.join(os.path.dirname(config_folder), '.aiida~')
     reset_config(config_folder, config_save_folder)
+    assert not os.path.isfile(os.path.join(config_folder, 'config.json'))
     shutil.copytree(config_folder, config_save_folder)
     yield
     reset_config(config_folder, config_save_folder)
