@@ -1,4 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ._config import *
+from . import process 
+from . import configure
