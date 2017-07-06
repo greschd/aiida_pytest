@@ -19,7 +19,7 @@ def get_process_inputs(inputs_setup):
 
 @pytest.fixture
 def inputs_setup(set_code, set_single_core):
-    def inner(inputs, code_string=code_string, single_core=True):
+    def inner(inputs, code_string, single_core=True):
         set_code(inputs, code_string=code_string)
         if single_core:
             set_single_core(inputs)
