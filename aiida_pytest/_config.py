@@ -18,6 +18,8 @@ import pytest
 from ._input_helper import InputHelper
 from .contextmanagers import redirect_stdin, redirect_stdout
 
+__all__ = ['configure']
+
 @pytest.fixture(scope='session')
 def configure():
     with open(os.path.abspath('config.yml'), 'r') as f:
