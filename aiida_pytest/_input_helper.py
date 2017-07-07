@@ -13,6 +13,6 @@ class InputHelper:
             res = self.input.pop(0)
             if res is None:
                 raise EOFError
-            return res
+            return res + '\n'
         except IndexError:
             raise EOFError

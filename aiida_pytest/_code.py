@@ -15,17 +15,20 @@ def setup_code(
     remote_computer,
     remote_abspath,
     local=False,
+    prepend_text='',
+    append_text=''
 ):
-    code_input = InputHelper(input=[
-        label,
-        description,
-        str(local),
-        default_plugin,
-        remote_computer,
-        remote_abspath,
-        None,
-        None
-    ])
+    code_input = InputHelper(input=
+        [
+            label,
+            description,
+            str(local),
+            default_plugin,
+            remote_computer,
+            remote_abspath
+        ] + prepend_text.splitlines() + [None] +
+        append_text.splitlines() + [None]
+    )
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         with redirect_stdin(code_input):
             Code().code_setup()
