@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import getpass
 
 from aiida.cmdline.verdilib import Computer
 
@@ -14,7 +15,7 @@ def setup_computer(
         transport,
         scheduler,
         work_directory,
-        configuration={},
+        configuration={'username': getpass.getuser()},
         description='',
         mpirun_command='mprun -np {tot_num_mpiprocs}',
         num_cpus=1,
