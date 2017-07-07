@@ -18,7 +18,12 @@ import pytest
 from ._input_helper import InputHelper
 from .contextmanagers import redirect_stdin, redirect_stdout
 
-__all__ = ['configure']
+__all__ = ['configure', 'configure_with_daemon']
+
+@pytest.fixture(scope='session')
+def configure_with_daemon(configure):
+    with handle_daemon():
+        yield
 
 @pytest.fixture(scope='session')
 def configure():
@@ -47,9 +52,7 @@ def configure():
             codes = config.get('codes', [])
             for code_kwargs in codes:
                 setup_code(**code_kwargs)
-
-            with handle_daemon():
-                yield
+            yield
 
 @contextmanager
 def reset_config_after_run():

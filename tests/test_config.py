@@ -29,7 +29,7 @@ def test_db_flushed(configure):
     str_obj.label = tag
     str_obj.store()
 
-def test_daemon_running(configure):
+def test_daemon_running(configure_with_daemon):
     from aiida.cmdline.verdilib import Daemon
     output = io.BytesIO()
     with redirect_stdout(output):
