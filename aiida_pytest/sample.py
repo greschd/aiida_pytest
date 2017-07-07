@@ -5,6 +5,8 @@ from os.path import abspath, join
 
 import pytest
 
+__all__ = ['sample']
+
 @pytest.fixture
 def sample():
     def inner(name):

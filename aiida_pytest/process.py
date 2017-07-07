@@ -3,6 +3,8 @@
 
 import pytest
 
+__all__ = ['get_process_inputs', 'inputs_setup', 'set_code']
+
 @pytest.fixture
 def get_process_inputs(inputs_setup):
     def inner(calculation_string, code_string, single_core=True):

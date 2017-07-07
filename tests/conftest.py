@@ -3,6 +3,4 @@
 
 import pytest
 
-from aiida_pytest.sample import * 
-from aiida_pytest.process import *
-from aiida_pytest.configure import *
+from aiida_pytest import * 
