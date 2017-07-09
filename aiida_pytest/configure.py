@@ -53,6 +53,13 @@ def configure():
             codes = config.get('codes', [])
             for code_kwargs in codes:
                 setup_code(**code_kwargs)
+
+            # with same pattern setup test psf- pseudo family
+            from ._psf_family import setup_psf_family
+            psf_families = config.get('psf_families', [])
+            for psf_family_kwargs in psf_families:
+                setup_psf_family(**psf_family_kwargs)
+
             yield
 
 
