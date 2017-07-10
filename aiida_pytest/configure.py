@@ -68,7 +68,7 @@ def reset_config_after_run():
     config_folder = os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER)
     config_save_folder = os.path.join(
         os.path.dirname(config_folder), '.aiida~')
-    reset_config(config_folder, config_save_folder)
+    # reset_config(config_folder, config_save_folder)
     assert not os.path.isfile(os.path.join(config_folder, 'config.json'))
     shutil.copytree(config_folder, config_save_folder)
     yield
@@ -76,13 +76,16 @@ def reset_config_after_run():
 
 
 def reset_config(config_folder, config_save_folder):
+    reset_submit_test_folder(config_folder)
     if os.path.isdir(config_save_folder):
-        # remove temp `submit_test` folder for not_submitted_to_daemon tests
-        shutil.rmtree(os.path.join(os.path.dirname(config_folder), 'submit_test'))
-
-        # remove temp `.aiida` folder and reset configuration
         shutil.rmtree(config_folder, ignore_errors=True)
         os.rename(config_save_folder, config_folder)
+
+
+def reset_submit_test_folder(config_folder):
+    if os.path.isdir(os.path.join(os.path.dirname(config_folder), 'submit_test')):
+        # remove temp `submit_test` folder for not_submitted_to_daemon tests
+        shutil.rmtree(os.path.join(os.path.dirname(config_folder), 'submit_test'))
 
 
 @contextmanager
