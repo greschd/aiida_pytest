@@ -29,6 +29,8 @@ def configure_with_daemon(configure):
 def configure():
     with open(os.path.abspath('config.yml'), 'r') as f:
         config = yaml.load(f)
+    if config is None:
+        config = dict()
 
     with temporary.temp_dir() as td, PGTest(max_connections=100) as pgt:
         with reset_config_after_run():

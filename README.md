@@ -15,3 +15,5 @@ Also, you need to create an empty ``.aiida`` in the folder where you want to run
 ## Installation: pgtest
 
 Currently, the version of ``pgtest`` available on PyPI does not work with ``aiida-pytest``. For this reason, you must install it with ``pip install -r requirements.txt``, using the provided requirements file.
+
+**Note:** ``aiida-pytest`` is not compatible with the ``aiida-xdist`` plugin, since the fixtures with ``scope=session`` are then called for each running worker.

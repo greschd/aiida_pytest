@@ -1,1 +1,1 @@
-git+https://github.com/greschd/pgtest.git@master#egg=pgtest
+git+https://github.com/jamesnunn/pgtest.git@master#egg=pgtest
