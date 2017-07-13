@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from __future__ import division, print_function, unicode_literals
 
 import os
@@ -63,8 +60,12 @@ def reset_config_after_run():
     reset_config(config_folder, config_save_folder)
     assert not os.path.isfile(os.path.join(config_folder, 'config.json'))
     shutil.copytree(config_folder, config_save_folder)
-    yield
-    reset_config(config_folder, config_save_folder)
+    try:
+        yield
+    except Exception as e:
+        raise e
+    finally:
+        reset_config(config_folder, config_save_folder)
 
 def reset_config(config_folder, config_save_folder):
     if os.path.isdir(config_save_folder):
@@ -76,6 +77,10 @@ def handle_daemon():
     from aiida.cmdline.verdilib import Daemon
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         Daemon().daemon_restart()
-    yield
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        Daemon().daemon_stop()
+    try:
+        yield
+    except Exception as e:
+        raise e
+    finally:
+        with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+            Daemon().daemon_stop()
