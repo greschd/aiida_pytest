@@ -17,7 +17,7 @@ def setup_computer(
         work_directory,
         configuration={'username': getpass.getuser()},
         description='',
-        mpirun_command='mprun -np {tot_num_mpiprocs}',
+        mpirun_command='mpirun -np {tot_num_mpiprocs}',
         num_cpus=1,
         enabled=True,
 ):
