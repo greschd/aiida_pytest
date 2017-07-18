@@ -12,9 +12,3 @@ codes:
       default_plugin: simpleplugins.templatereplacer
       remote_computer: localhost
       remote_abspath: /bin/ls
-
-pseudo_families:
-  - command_name: aiida_vasp.commands.paw._Paw
-    folder: /home/greschd/software/VASP-5.4.1/potpaw_PBE.54
-    group_name: pbe
-    group_description: VASP PBE
