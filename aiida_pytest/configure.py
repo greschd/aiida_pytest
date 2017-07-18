@@ -32,7 +32,7 @@ def configure():
         config = dict()
 
     with temporary.temp_dir() as td, PGTest(max_connections=100) as pgt:
-        with reset_config_after_run():
+        with reset_after_run():
             from ._setup import run_setup
             with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
                 run_setup(
@@ -41,7 +41,8 @@ def configure():
                     db_port=pgt.port,
                     db_name='postgres',
                     db_pass='',
-                    repo=str(td))
+                    repo=str(td)
+                )
 
             from ._computer import setup_computer
             computers = config.get('computers', [])
@@ -54,20 +55,21 @@ def configure():
                 setup_code(**code_kwargs)
 
             # with same pattern setup test psf- pseudo family
-            from ._psf_family import setup_psf_family
-            psf_families = config.get('psf_families', [])
-            for psf_family_kwargs in psf_families:
-                setup_psf_family(**psf_family_kwargs)
+            from ._pseudo_family import setup_pseudo_family
+            pseudo_families = config.get('pseudo_families', [])
+            for pseudo_family_kwargs in pseudo_families:
+                setup_pseudo_family(**pseudo_family_kwargs)
 
             yield
 
 
 @contextmanager
-def reset_config_after_run():
+def reset_after_run():
     config_folder = os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER)
     config_save_folder = os.path.join(
-        os.path.dirname(config_folder), '.aiida~')
-    # reset_config(config_folder, config_save_folder)
+        os.path.dirname(config_folder), '.aiida~'
+    )
+    reset_config(config_folder, config_save_folder)
     assert not os.path.isfile(os.path.join(config_folder, 'config.json'))
     shutil.copytree(config_folder, config_save_folder)
     try:
@@ -76,19 +78,22 @@ def reset_config_after_run():
         raise e
     finally:
         reset_config(config_folder, config_save_folder)
+        reset_submit_test_folder(config_folder)
 
 
 def reset_config(config_folder, config_save_folder):
-    reset_submit_test_folder(config_folder)
     if os.path.isdir(config_save_folder):
         shutil.rmtree(config_folder, ignore_errors=True)
         os.rename(config_save_folder, config_folder)
 
 
 def reset_submit_test_folder(config_folder):
-    if os.path.isdir(os.path.join(os.path.dirname(config_folder), 'submit_test')):
+    submit_test_folder = os.path.join(
+        os.path.dirname(config_folder), 'submit_test'
+    )
+    if os.path.isdir(submit_test_folder):
         # remove temp `submit_test` folder for not_submitted_to_daemon tests
-        shutil.rmtree(os.path.join(os.path.dirname(config_folder), 'submit_test'))
+        shutil.rmtree(submit_test_folder)
 
 
 @contextmanager

@@ -33,7 +33,7 @@ if __name__ == '__main__':
             'Topic :: Scientific/Engineering :: Physics'
         ],
         keywords='pytest aiida workflows',
-        packages=find_packages(exclude=['aiida']),
+        packages=find_packages(exclude=['aiida', 'plum']),
         include_package_data=True,
         install_requires=requirements,
     )
