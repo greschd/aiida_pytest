@@ -3,4 +3,4 @@
 
 import pytest
 
-from aiida_pytest import * 
+from aiida_pytest import *
