@@ -15,17 +15,18 @@ import pytest
 from ._input_helper import InputHelper
 from .contextmanagers import redirect_stdin, redirect_stdout
 
-__all__ = ['configure', 'configure_with_daemon']
+__all__ = ['configure', 'configure_with_daemon', 'pytest_addoption']
 
+def pytest_addoption(parser):
+    parser.addoption('--quiet-wipe', action='store_true', help='Disable asking for input before wiping the test AiiDA environment.')
 
 @pytest.fixture(scope='session')
 def configure_with_daemon(configure):
     with handle_daemon():
         yield
 
-
 @pytest.fixture(scope='session')
-def configure():
+def configure(pytestconfig):
     with open(os.path.abspath('config.yml'), 'r') as f:
         config = yaml.load(f)
     if config is None:
@@ -61,7 +62,11 @@ def configure():
                 setup_pseudo_family(**pseudo_family_kwargs)
 
             yield
-
+            if not pytestconfig.option.quiet_wipe:
+                capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
+                capture_manager.suspendcapture(in_=True)
+                raw_input("\nTests finished. Press enter to wipe the test AiiDA environment.")
+                capture_manager.resumecapture()
 
 @contextmanager
 def reset_after_run():
