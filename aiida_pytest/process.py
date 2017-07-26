@@ -3,7 +3,7 @@
 
 import pytest
 
-__all__ = ['get_process_inputs', 'inputs_setup', 'set_code', 'set_single_core']
+__all__ = ['get_process_inputs', 'inputs_setup', 'set_code', 'set_single_core', 'assert_finished']
 
 @pytest.fixture
 def get_process_inputs(inputs_setup):
@@ -39,4 +39,13 @@ def set_single_core():
     def inner(inputs):
         inputs._options.resources = {'num_machines': 1, 'tot_num_mpiprocs': 1}
         inputs._options.withmpi = False
+    return inner
+
+@pytest.fixture
+def assert_finished():
+    def inner(pid):
+        from aiida.orm import load_node
+        from aiida.common.datastructures import calc_states
+        calc = load_node(pid)
+        assert calc.get_state() == calc_states.FINISHED
     return inner
