@@ -42,10 +42,16 @@ def set_single_core():
     return inner
 
 @pytest.fixture
-def assert_finished():
-    def inner(pid):
+def assert_state():
+    def inner(pid, state):
         from aiida.orm import load_node
-        from aiida.common.datastructures import calc_states
         calc = load_node(pid)
-        assert calc.get_state() == calc_states.FINISHED
+        assert calc.get_state() == state
+    return inner
+
+@pytest.fixture
+def assert_finished(assert_state):
+    def inner(pid):
+        from aiida.common.datastructures import calc_states
+        assert_state(pid, calc_states.FINISHED)
     return inner
