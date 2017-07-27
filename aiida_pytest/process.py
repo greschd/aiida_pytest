@@ -3,7 +3,10 @@
 
 import pytest
 
-__all__ = ['get_process_inputs', 'inputs_setup', 'set_code', 'set_single_core', 'assert_finished']
+__all__ = [
+    'get_process_inputs', 'inputs_setup', 'set_code', 'set_single_core',
+    'assert_state', 'assert_finished'
+]
 
 @pytest.fixture
 def get_process_inputs(inputs_setup):
