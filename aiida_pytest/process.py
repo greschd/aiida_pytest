@@ -48,8 +48,16 @@ def set_single_core():
 def assert_state():
     def inner(pid, state):
         from aiida.orm import load_node
+        from aiida.common.datastructures import calc_states
+        from aiida.orm.calculation.work import WorkCalculation
         calc = load_node(pid)
-        assert calc.get_state() == state
+        if isinstance(calc, WorkCalculation):
+            if state == calc_states.FINISHED:
+                assert calc.has_finished_ok()
+            else:
+                raise ValueError('Cannot check WorkCalculation for state {}'.format(state))
+        else:
+            assert calc.get_state() == state
     return inner
 
 @pytest.fixture
