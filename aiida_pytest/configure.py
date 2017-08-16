@@ -16,7 +16,7 @@ import pytest
 from ._input_helper import InputHelper
 from .contextmanagers import redirect_stdin, redirect_stdout
 
-__all__ = ['configure', 'configure_with_daemon', 'pytest_addoption', 'queue_name_from_code', 'config_dict']
+__all__ = ['configure', 'configure_with_daemon', 'pytest_addoption', 'get_queue_name_from_code', 'config_dict']
 
 def pytest_addoption(parser):
     parser.addoption('--queue-name', action='store', help='Name of the queue used to submit calculations.')
@@ -31,7 +31,7 @@ def config_dict():
     return config
 
 @pytest.fixture(scope='session')
-def queue_name_from_code(request, config_dict):
+def get_queue_name_from_code(request, config_dict):
     def inner(code):
         queue_name = request.config.getoption('--queue-name')
         if queue_name is None:
