@@ -6,3 +6,4 @@ __version__ = '0.0.0a1'
 from .process import *
 from .configure import *
 from .sample import *
+from .compare import * 
