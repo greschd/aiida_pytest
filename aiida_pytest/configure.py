@@ -64,8 +64,10 @@ def configure(pytestconfig, config_dict):
             from ._computer import setup_computer
             computers = config.get('computers', {})
             for name, kwargs in computers.items():
-                kwargs.pop('queue_name')
-                setup_computer(name=name, **kwargs)
+                setup_computer(
+                    name=name,
+                    **{k: v for k, v in kwargs.items() if k != 'queue_name'}
+                )
 
             from ._code import setup_code
             codes = config.get('codes', {})
