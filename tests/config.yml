@@ -1,14 +1,15 @@
 computers:
-    - name: localhost
-      hostname: localhost
-      description: localhost
-      transport: local
-      scheduler: direct
-      work_directory: /tmp/test_aiida_pytest_run
+  localhost:
+    hostname: localhost
+    description: localhost
+    transport: local
+    scheduler: direct
+    work_directory: /tmp/test_aiida_pytest_run
+    queue_name: test_queue_name
 
 codes:
-    - label: ls
-      description: ls
-      default_plugin: simpleplugins.templatereplacer
-      remote_computer: localhost
-      remote_abspath: /bin/ls
+  ls:
+    description: ls
+    default_plugin: simpleplugins.templatereplacer
+    remote_computer: localhost
+    remote_abspath: /bin/ls

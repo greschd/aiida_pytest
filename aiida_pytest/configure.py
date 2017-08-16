@@ -1,6 +1,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import os
+import copy
 import json
 import shutil
 from contextlib import contextmanager
@@ -15,10 +16,29 @@ import pytest
 from ._input_helper import InputHelper
 from .contextmanagers import redirect_stdin, redirect_stdout
 
-__all__ = ['configure', 'configure_with_daemon', 'pytest_addoption']
+__all__ = ['configure', 'configure_with_daemon', 'pytest_addoption', 'queue_name_from_code', 'config_dict']
 
 def pytest_addoption(parser):
+    parser.addoption('--queue-name', action='store', help='Name of the queue used to submit calculations.')
     parser.addoption('--quiet-wipe', action='store_true', help='Disable asking for input before wiping the test AiiDA environment.')
+
+@pytest.fixture(scope='session')
+def config_dict():
+    with open(os.path.abspath('config.yml'), 'r') as f:
+        config = yaml.load(f)
+    if config is None:
+        config = dict()
+    return config
+
+@pytest.fixture(scope='session')
+def queue_name_from_code(request, config_dict):
+    def inner(code):
+        queue_name = request.config.getoption('--queue-name')
+        if queue_name is None:
+            computer = config_dict['codes'][code]['remote_computer']
+            queue_name = config_dict['computers'][computer]['queue_name']
+        return queue_name
+    return inner
 
 @pytest.fixture(scope='session')
 def configure_with_daemon(configure):
@@ -26,12 +46,8 @@ def configure_with_daemon(configure):
         yield
 
 @pytest.fixture(scope='session')
-def configure(pytestconfig):
-    with open(os.path.abspath('config.yml'), 'r') as f:
-        config = yaml.load(f)
-    if config is None:
-        config = dict()
-
+def configure(pytestconfig, config_dict):
+    config = copy.deepcopy(config_dict)
     with temporary.temp_dir() as td, PGTest(max_connections=100) as pgt:
         with reset_after_run():
             from ._setup import run_setup
@@ -46,20 +62,21 @@ def configure(pytestconfig):
                 )
 
             from ._computer import setup_computer
-            computers = config.get('computers', [])
-            for computer_kwargs in computers:
-                setup_computer(**computer_kwargs)
+            computers = config.get('computers', {})
+            for name, kwargs in computers.items():
+                kwargs.pop('queue_name')
+                setup_computer(name=name, **kwargs)
 
             from ._code import setup_code
-            codes = config.get('codes', [])
-            for code_kwargs in codes:
-                setup_code(**code_kwargs)
+            codes = config.get('codes', {})
+            for label, kwargs in codes.items():
+                setup_code(label=label, **kwargs)
 
             # with same pattern setup test psf- pseudo family
             from ._pseudo_family import setup_pseudo_family
-            pseudo_families = config.get('pseudo_families', [])
-            for pseudo_family_kwargs in pseudo_families:
-                setup_pseudo_family(**pseudo_family_kwargs)
+            pseudo_families = config.get('pseudo_families', {})
+            for group_name, kwargs in pseudo_families.items():
+                setup_pseudo_family(group_name=group_name, **kwargs)
 
             yield
             if not pytestconfig.option.quiet_wipe:
