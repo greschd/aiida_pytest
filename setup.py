@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
 
+import re
 import sys
 from setuptools import setup, find_packages
 
-requirements = [
-    'aiida-core',
-    'pytest',
-    'temporary',
-    'pyyaml',
-]
-if sys.version_info < (3,):
-    requirements += ['chainmap']
+# Get the version number
+with open('./aiida_pytest/__init__.py') as f:
+    match_expr = "__version__[^'\"]+(['\"])([^'\"]+)"
+    version = re.search(match_expr, f.read()).group(2).strip()
 
 if __name__ == '__main__':
     setup(
         name='aiida-pytest',
-        version='0.0.0a1',
+        version=version,
         description='Module to simplify using pytest for AiiDA plugins',
         author='Dominik Gresch',
         author_email='greschd@gmx.ch',
@@ -32,5 +29,13 @@ if __name__ == '__main__':
         keywords='pytest aiida workflows',
         packages=find_packages(exclude=['aiida', 'plum']),
         include_package_data=True,
-        install_requires=requirements,
+        install_requires=[
+            'aiida-core',
+            'pytest',
+            'temporary',
+            'pyyaml',
+        ],
+        extras_require={
+            ':python_version < "3"': ['chainmap']
+        }
     )
