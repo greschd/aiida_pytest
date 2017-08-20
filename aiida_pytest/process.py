@@ -1,11 +1,10 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import time
 
 import pytest
 
 __all__ = [
     'get_process_inputs', 'inputs_setup', 'set_code', 'set_single_core',
-    'assert_state', 'assert_finished'
+    'assert_state', 'assert_finished', 'wait_for'
 ]
 
 @pytest.fixture
@@ -65,4 +64,13 @@ def assert_finished(assert_state):
     def inner(pid):
         from aiida.common.datastructures import calc_states
         assert_state(pid, calc_states.FINISHED)
+    return inner
+
+@pytest.fixture
+def wait_for():
+    def inner(pid, timeout=1):
+        from aiida.orm import load_node
+        calc = load_node(pid)
+        while not calc.has_finished():
+            time.sleep(timeout)
     return inner
