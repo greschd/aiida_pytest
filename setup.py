@@ -37,6 +37,6 @@ if __name__ == '__main__':
             'fsc.export',
         ],
         extras_require={
-            ':python_version < "3"': ['chainmap']
+            ':python_version < "3"': ['chainmap', 'pathlib2']
         }
     )
