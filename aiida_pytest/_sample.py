@@ -4,9 +4,9 @@
 from os.path import abspath, join
 
 import pytest
+from fsc.export import export
 
-__all__ = ['sample']
-
+@export
 @pytest.fixture
 def sample():
     def inner(name):

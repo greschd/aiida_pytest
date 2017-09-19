@@ -12,16 +12,17 @@ from pgtest.pgtest import PGTest
 import aiida
 import django
 import pytest
+from fsc.export import export
 
 from ._input_helper import InputHelper
 from .contextmanagers import redirect_stdin, redirect_stdout
 
-__all__ = ['configure', 'configure_with_daemon', 'pytest_addoption', 'get_queue_name_from_code', 'config_dict']
-
+@export
 def pytest_addoption(parser):
     parser.addoption('--queue-name', action='store', help='Name of the queue used to submit calculations.')
     parser.addoption('--quiet-wipe', action='store_true', help='Disable asking for input before wiping the test AiiDA environment.')
 
+@export
 @pytest.fixture(scope='session')
 def config_dict():
     with open(os.path.abspath('config.yml'), 'r') as f:
@@ -30,6 +31,7 @@ def config_dict():
         config = dict()
     return config
 
+@export
 @pytest.fixture(scope='session')
 def get_queue_name_from_code(request, config_dict):
     def inner(code):
@@ -40,11 +42,13 @@ def get_queue_name_from_code(request, config_dict):
         return queue_name
     return inner
 
+@export
 @pytest.fixture(scope='session')
 def configure_with_daemon(configure):
     with handle_daemon():
         yield
 
+@export
 @pytest.fixture(scope='session')
 def configure(pytestconfig, config_dict):
     config = copy.deepcopy(config_dict)
