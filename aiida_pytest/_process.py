@@ -1,12 +1,9 @@
 import time
 
 import pytest
+from fsc.export import export
 
-__all__ = [
-    'get_process_inputs', 'inputs_setup', 'set_code', 'set_single_core',
-    'assert_state', 'assert_finished', 'wait_for'
-]
-
+@export
 @pytest.fixture
 def get_process_inputs(inputs_setup):
     def inner(calculation_string, code_string, single_core=True):
@@ -21,6 +18,7 @@ def get_process_inputs(inputs_setup):
         return process, inputs
     return inner
 
+@export
 @pytest.fixture
 def inputs_setup(set_code, set_single_core):
     def inner(inputs, code_string, single_core=True):
@@ -29,6 +27,7 @@ def inputs_setup(set_code, set_single_core):
             set_single_core(inputs)
     return inner
 
+@export
 @pytest.fixture
 def set_code():
     def inner(inputs, code_string):
@@ -36,6 +35,7 @@ def set_code():
         inputs.code = Code.get_from_string(code_string)
     return inner
 
+@export
 @pytest.fixture
 def set_single_core():
     def inner(inputs):
@@ -43,6 +43,7 @@ def set_single_core():
         inputs._options.withmpi = False
     return inner
 
+@export
 @pytest.fixture
 def assert_state():
     def inner(pid, state):
@@ -59,6 +60,7 @@ def assert_state():
             assert calc.get_state() == state
     return inner
 
+@export
 @pytest.fixture
 def assert_finished(assert_state):
     def inner(pid):
@@ -66,6 +68,7 @@ def assert_finished(assert_state):
         assert_state(pid, calc_states.FINISHED)
     return inner
 
+@export
 @pytest.fixture
 def wait_for():
     def inner(pid, timeout=1):

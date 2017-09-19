@@ -34,6 +34,7 @@ if __name__ == '__main__':
             'pytest',
             'temporary',
             'pyyaml',
+            'fsc.export',
         ],
         extras_require={
             ':python_version < "3"': ['chainmap']

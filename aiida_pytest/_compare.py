@@ -1,7 +1,7 @@
 import pytest
+from fsc.export import export
 
-__all__ = ['assert_outputs_equal']
-
+@export
 @pytest.fixture
 def assert_outputs_equal():
     def inner(output1, output2):

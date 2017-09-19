@@ -3,7 +3,9 @@
 
 __version__ = '0.0.0a1'
 
-from .process import *
-from .configure import *
-from .sample import *
-from .compare import * 
+from ._process import *
+from ._configure import *
+from ._sample import *
+from ._compare import *
+
+__all__ = _process.__all__ + _configure.__all__ + _sample.__all__ + _compare.__all__
