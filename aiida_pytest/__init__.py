@@ -7,5 +7,6 @@ from ._process import *
 from ._configure import *
 from ._sample import *
 from ._compare import *
+from ._monkeypatch import * 
 
-__all__ = _process.__all__ + _configure.__all__ + _sample.__all__ + _compare.__all__
+__all__ = _process.__all__ + _configure.__all__ + _sample.__all__ + _compare.__all__ + _monkeypatch.__all__
