@@ -12,10 +12,6 @@ This defines the ``configure`` and ``configure_with_daemon`` fixtures.
 
 Also, you need to create an empty ``.aiida`` in the folder where you want to run your tests. Then, you need to ``export AIIDA_PATH='.'`` to make sure aiida is using this config folder. This is to make sure that the tests create a local configuration (that will be destroyed after the test) instead of running in your main AiiDA configuration.
 
-## Installation: pgtest
-
-Currently, the version of ``pgtest`` available on PyPI does not work with ``aiida-pytest``. For this reason, you must install it with ``pip install -r requirements.txt``, using the provided requirements file.
-
 **Note:** ``aiida-pytest`` is not compatible with the ``aiida-xdist`` plugin, since the fixtures with ``scope=session`` are then called for each running worker.
 
 ## Defining and running tests

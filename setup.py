@@ -35,6 +35,7 @@ if __name__ == '__main__':
             'temporary',
             'pyyaml',
             'fsc.export',
+            'pgtest>=1.1',
         ],
         extras_require={
             ':python_version < "3"': ['chainmap', 'pathlib2']

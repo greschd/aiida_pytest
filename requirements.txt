@@ -1,1 +1,0 @@
-git+https://github.com/jamesnunn/pgtest.git@master#egg=pgtest
