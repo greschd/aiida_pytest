@@ -15,6 +15,7 @@ import pytest
 from fsc.export import export
 
 from ._input_helper import InputHelper
+from ._daemon_times import set_daemon_interval_times
 from .contextmanagers import redirect_stdin, redirect_stdout
 
 @export
@@ -84,6 +85,8 @@ def configure(pytestconfig, config_dict):
             for group_name, kwargs in pseudo_families.items():
                 setup_pseudo_family(group_name=group_name, **kwargs)
 
+            # configure the daemon interval times
+            set_daemon_interval_times()
             yield
             if not pytestconfig.option.quiet_wipe:
                 capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')

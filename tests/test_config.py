@@ -3,6 +3,7 @@
 
 import io
 import os
+import time
 
 import aiida
 import pytest
@@ -31,7 +32,13 @@ def test_db_flushed(configure):
 
 def test_daemon_running(configure_with_daemon):
     from aiida.cmdline.verdilib import Daemon
-    output = io.BytesIO()
-    with redirect_stdout(output):
-        Daemon().daemon_status()
-    assert '## Found 1 process running:' in output.getvalue()
+    start_time = time.time()
+    max_timeout = 5
+    while time.time() - start_time < max_timeout:
+        output = io.BytesIO()
+        with redirect_stdout(output):
+            Daemon().daemon_status()
+        if 'Daemon is running as pid' in output.getvalue():
+            break
+    else:
+        raise ValueError('Daemon not running after {} seconds.'.format(max_timeout))
