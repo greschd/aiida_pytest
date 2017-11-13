@@ -3,7 +3,7 @@ import json
 
 import aiida
 
-def set_daemon_interval_times(time=5):
+def set_daemon_interval_times(time=1):
     filename = os.path.join(aiida.common.setup.AIIDA_CONFIG_FOLDER, 'config.json')
 
     with open(filename) as f:
