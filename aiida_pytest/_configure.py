@@ -86,7 +86,7 @@ def configure(pytestconfig, config_dict):
                 setup_pseudo_family(group_name=group_name, **kwargs)
 
             # configure the daemon interval times
-            set_daemon_interval_times()
+            set_daemon_interval_times(config.get('daemon_interval_time', 1))
             yield
             if not pytestconfig.option.quiet_wipe:
                 capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
