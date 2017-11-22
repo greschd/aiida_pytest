@@ -22,6 +22,7 @@ from .contextmanagers import redirect_stdin, redirect_stdout
 def pytest_addoption(parser):
     parser.addoption('--queue-name', action='store', help='Name of the queue used to submit calculations.')
     parser.addoption('--quiet-wipe', action='store_true', help='Disable asking for input before wiping the test AiiDA environment.')
+    parser.addoption('--daemon-interval-time', action='store', type="int", help='Interval between daemon status checks.')
 
 @export
 @pytest.fixture(scope='session')
@@ -86,7 +87,10 @@ def configure(pytestconfig, config_dict):
                 setup_pseudo_family(group_name=group_name, **kwargs)
 
             # configure the daemon interval times
-            set_daemon_interval_times(config.get('daemon_interval_time', 1))
+            daemon_interval_time = pytestconfig.option.daemon_interval_time
+            if daemon_interval_time is None:
+                daemon_interval_time = config.get('daemon_interval_time', 1)
+            set_daemon_interval_times(daemon_interval_time)
             yield
             if not pytestconfig.option.quiet_wipe:
                 capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
