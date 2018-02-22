@@ -87,10 +87,10 @@ def configure(pytestconfig, config_dict):
                 setup_pseudo_family(group_name=group_name, **kwargs)
 
             # configure the daemon interval times
-            daemon_interval_time = pytestconfig.option.daemon_interval_time
-            if daemon_interval_time is None:
-                daemon_interval_time = config.get('daemon_interval_time', 1)
-            set_daemon_interval_times(daemon_interval_time)
+            # daemon_interval_time = pytestconfig.option.daemon_interval_time
+            # if daemon_interval_time is None:
+            #     daemon_interval_time = config.get('daemon_interval_time', 1)
+            # set_daemon_interval_times(daemon_interval_time)
             yield
             if not pytestconfig.option.quiet_wipe:
                 capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
@@ -137,13 +137,16 @@ def reset_submit_test_folder(config_folder):
 
 @contextmanager
 def handle_daemon():
-    from aiida.cmdline.verdilib import Daemon
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        Daemon().daemon_restart()
-    try:
-        yield
-    except Exception as e:
-        raise e
-    finally:
-        with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-            Daemon().daemon_stop()
+    import warnings
+    warnings.warn('Running devel workflows branch: Daemon needs to be started manually.')
+    yield
+    # from aiida.cmdline.verdilib import Daemon
+    # with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+    #     Daemon().daemon_restart()
+    # try:
+    #     yield
+    # except Exception as e:
+    #     raise e
+    # finally:
+    #     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+    #         Daemon().daemon_stop()
