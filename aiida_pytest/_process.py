@@ -5,42 +5,44 @@ from fsc.export import export
 
 @export
 @pytest.fixture
-def get_process_inputs(inputs_setup):
+def get_process_builder(inputs_setup):
     def inner(calculation_string, code_string, single_core=True):
         from aiida.orm import CalculationFactory
         process = CalculationFactory(calculation_string).process()
-        inputs = process.get_inputs_template()
+        builder = process.get_builder()
         inputs_setup(
-            inputs,
+            builder,
             code_string=code_string,
             single_core=single_core
         )
-        return process, inputs
+        return builder
     return inner
 
 @export
 @pytest.fixture
 def inputs_setup(set_code, set_single_core):
-    def inner(inputs, code_string, single_core=True):
-        set_code(inputs, code_string=code_string)
+    def inner(builder, code_string, single_core=True):
+        set_code(builder, code_string=code_string)
         if single_core:
-            set_single_core(inputs)
+            set_single_core(builder)
     return inner
 
 @export
 @pytest.fixture
 def set_code():
-    def inner(inputs, code_string):
+    def inner(builder, code_string):
         from aiida.orm.code import Code
-        inputs.code = Code.get_from_string(code_string)
+        builder.code = Code.get_from_string(code_string)
     return inner
 
 @export
 @pytest.fixture
 def set_single_core():
-    def inner(inputs):
-        inputs._options.resources = {'num_machines': 1, 'tot_num_mpiprocs': 1}
-        inputs._options.withmpi = False
+    def inner(builder):
+        builder.options = dict(
+            resources={'num_machines': 1, 'tot_num_mpiprocs': 1},
+            withmpi=False
+        )
     return inner
 
 @export
@@ -74,6 +76,6 @@ def wait_for():
     def inner(pid, timeout=1):
         from aiida.orm import load_node
         calc = load_node(pid)
-        while not calc.has_finished():
+        while not calc.is_finished:
             time.sleep(timeout)
     return inner
