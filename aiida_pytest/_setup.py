@@ -19,5 +19,4 @@ def run_setup(**kwargs):
     }
 
     _setup(**ChainMap(kwargs, defaults))
-    Profile().profile_setdefault('daemon', kwargs['profile'])
-    Profile().profile_setdefault('verdi', kwargs['profile'])
+    Profile().profile_setdefault(kwargs['profile'])

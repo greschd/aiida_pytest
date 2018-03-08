@@ -137,16 +137,11 @@ def reset_submit_test_folder(config_folder):
 
 @contextmanager
 def handle_daemon():
-    import warnings
-    warnings.warn('Running devel workflows branch: Daemon needs to be started manually.')
+    # import warnings
+    # from click.testing import CliRunner
+    # from aiida.cmdline.commands.daemon import start, stop
+    #
+    # runner = CliRunner()
+    # runner.invoke(start)
     yield
-    # from aiida.cmdline.verdilib import Daemon
-    # with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-    #     Daemon().daemon_restart()
-    # try:
-    #     yield
-    # except Exception as e:
-    #     raise e
-    # finally:
-    #     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-    #         Daemon().daemon_stop()
+    # runner.invoke(stop)

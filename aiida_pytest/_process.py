@@ -55,7 +55,7 @@ def assert_state():
         calc = load_node(pid)
         if isinstance(calc, WorkCalculation):
             if state == calc_states.FINISHED:
-                assert calc.has_finished_ok()
+                assert calc.finish_status == 0
             else:
                 raise ValueError('Cannot check WorkCalculation for state {}'.format(state))
         else:
