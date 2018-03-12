@@ -95,12 +95,21 @@ def configure(pytestconfig, config_dict):
             if not pytestconfig.option.quiet_wipe:
                 capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
                 try:
-                    capture_manager.init_capturings()
+                    try:
+                        capture_manager.init_capturings()
+                    except AttributeError:
+                        capture_manager.start_global_capturing()
                 except AssertionError:
                     pass
-                capture_manager.suspendcapture(in_=True)
+                try:
+                    capture_manager.suspendcapture(in_=True)
+                except AttributeError:
+                    capture_manager.suspend_global_capture(in_=True)
                 raw_input("\nTests finished. Press enter to wipe the test AiiDA environment.")
-                capture_manager.resumecapture()
+                try:
+                    capture_manager.resumecapture()
+                except AttributeError:
+                    capture_manager.resume_global_capture()
 
 @contextmanager
 def reset_after_run():
