@@ -90,9 +90,9 @@ def configure(pytestconfig, config_dict):
                 capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
 
                 # Handle compatibility break in pytest
-                init = getattr(capture_manager, 'init_capturings', capture_manager.start_global_capturing)
-                suspend = getattr(capture_manager, 'suspendcapture', capture_manager.suspend_global_capture)
-                resume = getattr(capture_manager, 'resumecapture', capture_manager.resume_global_capture)
+                init = getattr(capture_manager, 'init_capturings', getattr(capture_manager, 'start_global_capturing', None))
+                suspend = getattr(capture_manager, 'suspendcapture', getattr(capture_manager, 'suspend_global_capture', None))
+                resume = getattr(capture_manager, 'resumecapture', getattr(capture_manager, 'resume_global_capture', None))
 
                 try:
                     init()
