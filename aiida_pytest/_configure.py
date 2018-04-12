@@ -10,9 +10,11 @@ import yaml
 import temporary
 from pgtest.pgtest import PGTest
 import aiida
+from aiida.cmdline.commands.daemon import start, stop
 import django
 import pytest
 from fsc.export import export
+from click.testing import CliRunner
 
 from ._input_helper import InputHelper
 from .contextmanagers import redirect_stdin, redirect_stdout
@@ -137,11 +139,7 @@ def reset_submit_test_folder(config_folder):
 
 @contextmanager
 def handle_daemon():
-    # import warnings
-    # from click.testing import CliRunner
-    # from aiida.cmdline.commands.daemon import start, stop
-    #
-    # runner = CliRunner()
-    # runner.invoke(start)
+    runner = CliRunner()
+    runner.invoke(start)
     yield
-    # runner.invoke(stop)
+    runner.invoke(stop)

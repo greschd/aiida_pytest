@@ -6,7 +6,9 @@ import os
 import time
 
 import aiida
+from aiida.cmdline.commands.daemon import status
 import pytest
+from click.testing import CliRunner
 
 from aiida_pytest.contextmanagers import redirect_stdout
 
@@ -34,11 +36,10 @@ def test_daemon_running(configure_with_daemon):
     from aiida.cmdline.verdilib import Daemon
     start_time = time.time()
     max_timeout = 5
+    runner = CliRunner()
     while time.time() - start_time < max_timeout:
-        output = io.BytesIO()
-        with redirect_stdout(output):
-            Daemon().daemon_status()
-        if 'Daemon is running as pid' in output.getvalue():
+        res = runner.invoke(status)
+        if 'Daemon is running as PID' in res.output:
             break
     else:
-        raise ValueError('Daemon not running after {} seconds.'.format(max_timeout))
+        raise ValueError('Daemon not running after {} seconds. Status: {}'.format(max_timeout, res.output))
