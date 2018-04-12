@@ -76,6 +76,6 @@ def wait_for():
     def inner(pid, timeout=1):
         from aiida.orm import load_node
         calc = load_node(pid)
-        while not calc.is_finished:
+        while not calc.is_terminated:
             time.sleep(timeout)
     return inner
