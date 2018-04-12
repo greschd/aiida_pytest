@@ -23,7 +23,6 @@ from .contextmanagers import redirect_stdin, redirect_stdout
 def pytest_addoption(parser):
     parser.addoption('--queue-name', action='store', help='Name of the queue used to submit calculations.')
     parser.addoption('--quiet-wipe', action='store_true', help='Disable asking for input before wiping the test AiiDA environment.')
-    parser.addoption('--daemon-interval-time', action='store', type="int", help='Interval between daemon status checks.')
 
 @export
 @pytest.fixture(scope='session')
