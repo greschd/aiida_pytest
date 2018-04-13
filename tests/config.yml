@@ -6,6 +6,7 @@ computers:
     scheduler: direct
     work_directory: /tmp/test_aiida_pytest_run
     queue_name: test_queue_name
+    prepend_text: 'unset PYTHONPATH'
 
 codes:
   ls:

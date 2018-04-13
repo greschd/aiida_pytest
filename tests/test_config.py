@@ -13,8 +13,8 @@ from click.testing import CliRunner
 from aiida_pytest.contextmanagers import redirect_stdout
 
 def test_configure_from_file(configure):
-    from aiida.orm.user import User
-    user = User.get_all_users()[0]
+    from aiida.orm.implementation.django.user import DjangoUserCollection
+    user = DjangoUserCollection().all()[0]
     assert user.first_name == 'AiiDA'
 
 def test_db_flushed(configure):

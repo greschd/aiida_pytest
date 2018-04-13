@@ -21,6 +21,8 @@ def setup_computer(
         mpirun_command='mpirun -np {tot_num_mpiprocs}',
         num_cpus=1,
         enabled=True,
+        prepend_text=None,
+        append_text=None
 ):
     computer_input = InputHelper(input=[
         name,
@@ -33,8 +35,8 @@ def setup_computer(
         work_directory,
         mpirun_command,
         str(num_cpus),
-        None,
-        None
+        prepend_text,
+        append_text,
     ])
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         with redirect_stdin(computer_input):
