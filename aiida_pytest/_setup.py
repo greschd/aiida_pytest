@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from aiida.cmdline.verdilib import setup as _setup
-from aiida.cmdline.verdilib import Profile
+
+from click.testing import CliRunner
+from aiida.cmdline.commands.cmd_setup import setup as _setup
+from aiida.cmdline.commands.cmd_profile import profile_setdefault
 
 from ._chainmap import ChainMap
 
 def run_setup(**kwargs):
+    runner = CliRunner()
     defaults = {
         'backend': 'django',
         'email': 'aiida@localhost',
@@ -18,5 +21,5 @@ def run_setup(**kwargs):
         'db_host': 'localhost'
     }
 
-    _setup(**ChainMap(kwargs, defaults))
-    Profile().profile_setdefault(kwargs['profile'])
+    runner.invoke(_setup, **ChainMap(kwargs, defaults))
+    runner.invoke(profile_setdefault, profile_name=kwargs['profile'])

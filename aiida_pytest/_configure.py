@@ -2,7 +2,6 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import copy
-import json
 import shutil
 from contextlib import contextmanager
 
@@ -10,14 +9,13 @@ import yaml
 import temporary
 from pgtest.pgtest import PGTest
 import aiida
-from aiida.cmdline.commands.daemon import start, stop
+from aiida.cmdline.commands.cmd_daemon import start, stop
 import django
 import pytest
 from fsc.export import export
 from click.testing import CliRunner
 
-from ._input_helper import InputHelper
-from .contextmanagers import redirect_stdin, redirect_stdout
+from .contextmanagers import redirect_stdout
 
 @export
 def pytest_addoption(parser):

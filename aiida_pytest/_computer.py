@@ -1,88 +1,38 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import getpass
 
-from aiida.cmdline.verdilib import Computer
+from click.testing import CliRunner
+from aiida.cmdline.commands.cmd_computer import setup_computer as _setup_computer, computer_configure as _configure_computer
 
-from ._input_helper import InputHelper
-from .contextmanagers import redirect_stdin, redirect_stdout
 
-def setup_computer(
-        name,
-        hostname,
-        transport,
-        scheduler,
-        work_directory,
-        shebang='#!/bin/bash',
-        configuration={'username': getpass.getuser()},
-        description='',
-        mpirun_command='mpirun -np {tot_num_mpiprocs}',
-        num_cpus=1,
-        enabled=True,
-        prepend_text=None,
-        append_text=None
-):
-    computer_input = InputHelper(input=[
-        name,
-        hostname,
-        description,
-        str(enabled),
-        transport,
-        scheduler,
-        shebang,
-        work_directory,
-        mpirun_command,
-        str(num_cpus),
-        prepend_text,
-        append_text,
-    ])
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        with redirect_stdin(computer_input):
-            Computer().computer_setup()
-    if transport == 'local':
-        configure_localhost(name)
-    else:
-        configure_computer(name, **configuration)
-
-def configure_localhost(name):
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        Computer().computer_configure(name)
-
-def configure_computer(
-    name,
-    username='',
-    port=22,
-    look_for_keys=True,
-    key_filename='',
-    timeout=60,
-    allow_agent=True,
-    proxy_command='',
-    compress=True,
-    gss_auth=False,
-    gss_kex=False,
-    gss_deleg_creds=False,
-    gss_host='',
-    load_system_host_keys=True,
-    key_policy='RejectPolicy',
-):
-    configure_input = InputHelper(input=[
-        username,
-        str(port),
-        str(look_for_keys),
-        key_filename,
-        str(timeout),
-        str(allow_agent),
-        proxy_command,
-        str(compress),
-        str(gss_auth),
-        str(gss_kex),
-        str(gss_deleg_creds),
-        str(gss_host),
-        str(load_system_host_keys),
-        key_policy
-    ])
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        with redirect_stdin(configure_input):
-            Computer().computer_configure(name)
+def setup_computer(name,
+                   hostname,
+                   transport,
+                   scheduler,
+                   work_directory,
+                   shebang='#!/bin/bash',
+                   configuration={'username': getpass.getuser()},
+                   description='',
+                   mpirun_command='mpirun -np {tot_num_mpiprocs}',
+                   num_cpus=1,
+                   enabled=True,
+                   prepend_text=None,
+                   append_text=None):
+    runner = CliRunner()
+    runner.invoke(
+        _setup_computer,
+        name=name,
+        hostname=hostname,
+        description=description,
+        work_dir=work_directory,
+        shebang=shebang,
+        mpirun_command=mpirun_command,
+        enabled=enabled,
+        mpiprocs_per_machine=num_cpus,
+        prepend_text=prepend_text,
+        append_text=append_text,
+        non_interactive=True,
+    )
+    runner.invoke(_configure_computer.commands[transport], name=name, **configuration)
