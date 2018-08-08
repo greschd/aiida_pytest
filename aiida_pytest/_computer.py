@@ -6,7 +6,7 @@ import copy
 import getpass
 
 # from click.testing import CliRunner
-from aiida.cmdline.params.types import PluginParamType
+from aiida.cmdline.params.types import PluginParamType, UserParamType, ComputerParamType
 from aiida.cmdline.commands.cmd_computer import setup_computer as _setup_computer, computer_configure as _configure_computer
 
 from .contextmanagers import redirect_stdout
@@ -32,6 +32,7 @@ def setup_computer(
         configuration.setdefault('username', getpass.getuser())
         configuration.setdefault('look_for_keys', True)
         configuration.setdefault('allow_agent', True)
+        configuration.setdefault('load_system_host_keys', True)
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         _setup_computer.callback(
             label=name,
@@ -48,12 +49,11 @@ def setup_computer(
             append_text=append_text,
             non_interactive=True,
         )
-    from aiida.orm.computer import Computer
     configure_command = _configure_computer.commands[transport]
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         configure_command.callback(
-            computer=Computer.get(name),
-            user=None,
+            computer=ComputerParamType()(name),
+            user=UserParamType()('aiida@localhost'),
             non_interactive=True,
             **configuration
         )
