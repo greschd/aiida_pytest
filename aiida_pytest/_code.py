@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from click.testing import CliRunner
+from aiida.cmdline.params.types import ComputerParamType, PluginParamType
 from aiida.cmdline.commands.cmd_code import setup_code as _setup_code
 
 def setup_code(
@@ -14,15 +14,14 @@ def setup_code(
     prepend_text='',
     append_text=''
 ):
-    runner = CliRunner()
-    runner.invoke(
-    _setup_code,
+    _setup_code.callback(
         label=label,
         description=description,
-        default_plugin=default_plugin,
-        remote_computer=remote_computer,
-        remote_abspath=remote_abspath,
-        local=local,
+        input_plugin=PluginParamType(group='calculations')(default_plugin),
+        computer=ComputerParamType()(remote_computer),
+        remote_abs_path=remote_abspath,
+        on_computer=not local,
         prepend_text=prepend_text,
         append_text=append_text,
+        non_interactive=True,
     )

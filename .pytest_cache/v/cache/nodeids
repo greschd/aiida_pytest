@@ -1,0 +1,8 @@
+[
+  "tests/test_config.py::test_configure_from_file", 
+  "tests/test_config.py::test_db_flushed", 
+  "tests/test_config.py::test_daemon_running", 
+  "tests/test_queue_name.py::test_queue_name", 
+  "tests/test_sample.py::test_sample", 
+  "tests/test_subfolder/test_sample_from_subfolder.py::test_sample_from_subfolder"
+]

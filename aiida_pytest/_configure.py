@@ -10,10 +10,10 @@ import temporary
 from pgtest.pgtest import PGTest
 import aiida
 from aiida.cmdline.commands.cmd_daemon import start, stop
+from aiida.cmdline.commands.cmd_setup import setup as _setup
 import django
 import pytest
 from fsc.export import export
-from click.testing import CliRunner
 
 from .contextmanagers import redirect_stdout
 
@@ -54,15 +54,23 @@ def configure(pytestconfig, config_dict):
     config = copy.deepcopy(config_dict)
     with temporary.temp_dir() as td, PGTest(max_connections=100) as pgt:
         with reset_after_run():
-            from ._setup import run_setup
             with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-                run_setup(
-                    profile='test_profile',
-                    db_user='postgres',
+                _setup.callback(
+                    profile_name='test_profile',
+                    db_username='postgres',
                     db_port=pgt.port,
                     db_name='postgres',
-                    db_pass='',
-                    repo=str(td)
+                    db_password='',
+                    repository=str(td),
+                    backend='django',
+                    email='aiida@localhost',
+                    first_name='Test',
+                    last_name='User',
+                    institution='Test Lab',
+                    non_interactive=True,
+                    only_config=False,
+                    db_host='localhost',
+                    set_default=True
                 )
 
             from ._computer import setup_computer
@@ -84,6 +92,7 @@ def configure(pytestconfig, config_dict):
             for group_name, kwargs in pseudo_families.items():
                 setup_pseudo_family(group_name=group_name, **kwargs)
 
+            # aiida.try_load_dbenv()
             yield
             if not pytestconfig.option.quiet_wipe:
                 capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
@@ -136,7 +145,6 @@ def reset_submit_test_folder(config_folder):
 
 @contextmanager
 def handle_daemon():
-    runner = CliRunner()
-    runner.invoke(start)
+    start.callback(foreground=False)
     yield
-    runner.invoke(stop)
+    stop.callback(no_wait=False, all_profiles=True)
