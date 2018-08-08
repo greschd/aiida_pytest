@@ -30,6 +30,8 @@ def setup_computer(
     configuration = copy.deepcopy(configuration)
     if transport == 'ssh':
         configuration.setdefault('username', getpass.getuser())
+        configuration.setdefault('look_for_keys', True)
+        configuration.setdefault('allow_agent', True)
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         _setup_computer.callback(
             label=name,
