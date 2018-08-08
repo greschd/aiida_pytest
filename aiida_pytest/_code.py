@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+
 from aiida.cmdline.params.types import ComputerParamType, PluginParamType
 from aiida.cmdline.commands.cmd_code import setup_code as _setup_code
+
+from .contextmanagers import redirect_stdout
+
 
 def setup_code(
     label,
@@ -14,14 +19,15 @@ def setup_code(
     prepend_text='',
     append_text=''
 ):
-    _setup_code.callback(
-        label=label,
-        description=description,
-        input_plugin=PluginParamType(group='calculations')(default_plugin),
-        computer=ComputerParamType()(remote_computer),
-        remote_abs_path=remote_abspath,
-        on_computer=not local,
-        prepend_text=prepend_text,
-        append_text=append_text,
-        non_interactive=True,
-    )
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+        _setup_code.callback(
+            label=label,
+            description=description,
+            input_plugin=PluginParamType(group='calculations')(default_plugin),
+            computer=ComputerParamType()(remote_computer),
+            remote_abs_path=remote_abspath,
+            on_computer=not local,
+            prepend_text=prepend_text,
+            append_text=append_text,
+            non_interactive=True,
+        )

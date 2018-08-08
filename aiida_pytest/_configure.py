@@ -145,6 +145,8 @@ def reset_submit_test_folder(config_folder):
 
 @contextmanager
 def handle_daemon():
-    start.callback(foreground=False)
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+        start.callback(foreground=False)
     yield
-    stop.callback(no_wait=False, all_profiles=True)
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+        stop.callback(no_wait=False, all_profiles=True)
