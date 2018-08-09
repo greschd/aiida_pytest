@@ -2,3 +2,4 @@
 *.egg*
 .cache
 .ropeproject
+.pytest_cache

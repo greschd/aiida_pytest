@@ -149,4 +149,4 @@ def handle_daemon():
         start.callback(foreground=False)
     yield
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        stop.callback(no_wait=False, all_profiles=True)
+        stop.callback(no_wait=False, all_profiles=False)
