@@ -45,8 +45,8 @@ def setup_computer(
             mpirun_command=mpirun_command,
             enabled=enabled,
             mpiprocs_per_machine=num_cpus,
-            prepend_text=prepend_text,
-            append_text=append_text,
+            prepend_text=prepend_text or '',
+            append_text=append_text or '',
             non_interactive=True,
         )
     configure_command = _configure_computer.commands[transport]
