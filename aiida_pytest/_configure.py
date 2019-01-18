@@ -8,6 +8,7 @@ from __future__ import division, print_function, unicode_literals
 import os
 import copy
 import shutil
+import subprocess
 from contextlib import contextmanager
 
 import yaml
@@ -26,6 +27,7 @@ from .contextmanagers import redirect_stdout
 def pytest_addoption(parser):
     parser.addoption('--queue-name', action='store', help='Name of the queue used to submit calculations.')
     parser.addoption('--quiet-wipe', action='store_true', help='Disable asking for input before wiping the test AiiDA environment.')
+    parser.addoption('--print-status', action='store_true', help='Print the calculation and work status before exiting.')
 
 @export
 @pytest.fixture(scope='session')
@@ -100,21 +102,33 @@ def configure(pytestconfig, config_dict):
 
             # aiida.try_load_dbenv()
             yield
-            if not pytestconfig.option.quiet_wipe:
-                capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
 
-                # Handle compatibility break in pytest
-                init = getattr(capture_manager, 'init_capturings', getattr(capture_manager, 'start_global_capturing', None))
-                suspend = getattr(capture_manager, 'suspendcapture', getattr(capture_manager, 'suspend_global_capture', None))
-                resume = getattr(capture_manager, 'resumecapture', getattr(capture_manager, 'resume_global_capture', None))
+            # Handle compatibility break in pytest
+            capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
+            init = getattr(capture_manager, 'init_capturings', getattr(capture_manager, 'start_global_capturing', None))
+            suspend = getattr(capture_manager, 'suspendcapture', getattr(capture_manager, 'suspend_global_capture', None))
+            resume = getattr(capture_manager, 'resumecapture', getattr(capture_manager, 'resume_global_capture', None))
 
+            @contextmanager
+            def suspend_capture():
                 try:
                     init()
                 except AssertionError:
                     pass
                 suspend(in_=True)
-                raw_input("\nTests finished. Press enter to wipe the test AiiDA environment.")
+                yield
                 resume()
+
+            if pytestconfig.option.print_status:
+                with suspend_capture():
+                    print('\n\nCalculation List:')
+                    subprocess.call(['verdi', 'calculation', 'list', '-a'])
+                    print('\nWork List:')
+                    subprocess.call(['verdi', 'work', 'list', '-a'])
+
+            if not pytestconfig.option.quiet_wipe:
+                with suspend_capture():
+                    raw_input("\nTests finished. Press enter to wipe the test AiiDA environment.")
 
 @contextmanager
 def reset_after_run():
