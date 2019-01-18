@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# © 2017-2019, ETH Zurich, Institut für Theoretische Physik
+# Author: Dominik Gresch <greschd@gmx.ch>
+
 import re
 import sys
 from setuptools import setup, find_packages
@@ -22,7 +25,7 @@ if __name__ == '__main__':
             'Environment :: Plugins',
             'Framework :: AiiDA',
             'Intended Audience :: Science/Research',
-            'License :: OSI Approved :: MIT License',
+            'License :: OSI Approved :: Apache Software License',
             'Programming Language :: Python :: 2.7',
             'Topic :: Scientific/Engineering :: Physics'
         ],
