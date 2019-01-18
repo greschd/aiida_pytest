@@ -8,9 +8,13 @@ import os
 import copy
 import getpass
 
+import click
 # from click.testing import CliRunner
 from aiida.cmdline.params.types import PluginParamType, UserParamType, ComputerParamType
-from aiida.cmdline.commands.cmd_computer import setup_computer as _setup_computer, computer_configure as _configure_computer
+from aiida.cmdline.commands.cmd_computer import (
+    verdi_computer, computer_setup as _setup_computer, computer_configure as
+    _configure_computer
+)
 
 from .contextmanagers import redirect_stdout
 
@@ -37,7 +41,8 @@ def setup_computer(
         configuration.setdefault('allow_agent', True)
         configuration.setdefault('load_system_host_keys', True)
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        _setup_computer.callback(
+        click.Context(verdi_computer).invoke(
+            _setup_computer,
             label=name,
             hostname=hostname,
             transport=PluginParamType(group='transports')(transport),

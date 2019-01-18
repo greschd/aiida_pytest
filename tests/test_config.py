@@ -12,8 +12,8 @@ from aiida.cmdline.commands.cmd_daemon import status
 
 
 def test_configure_from_file(configure):
-    from aiida.orm.querybuilder import QueryBuilder
-    from aiida.orm.user import User
+    from aiida.orm import QueryBuilder
+    from aiida.orm import User
     qb = QueryBuilder()
     qb.append(User)
     user = qb.first()[0]
