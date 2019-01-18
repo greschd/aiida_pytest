@@ -28,6 +28,7 @@ def pytest_addoption(parser):
     parser.addoption('--queue-name', action='store', help='Name of the queue used to submit calculations.')
     parser.addoption('--quiet-wipe', action='store_true', help='Disable asking for input before wiping the test AiiDA environment.')
     parser.addoption('--print-status', action='store_true', help='Print the calculation and work status before exiting.')
+    parser.addoption('--end-cmd', action='store', help='Command to run before the tear-down (with output capture suspended).')
 
 @export
 @pytest.fixture(scope='session')
@@ -125,6 +126,11 @@ def configure(pytestconfig, config_dict):
                     subprocess.call(['verdi', 'calculation', 'list', '-a'])
                     print('\nWork List:')
                     subprocess.call(['verdi', 'work', 'list', '-a'])
+            end_cmd = pytestconfig.option.end_cmd
+            if end_cmd is not None:
+                with suspend_capture():
+                    print("Executing '{}'".format(end_cmd))
+                    subprocess.call(end_cmd, shell=True)
 
             if not pytestconfig.option.quiet_wipe:
                 with suspend_capture():
