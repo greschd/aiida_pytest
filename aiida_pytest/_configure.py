@@ -9,6 +9,7 @@ import os
 import copy
 import shutil
 import subprocess
+from builtins import input
 from contextlib import contextmanager
 
 import yaml
@@ -134,7 +135,7 @@ def configure(pytestconfig, config_dict):
 
             if not pytestconfig.option.quiet_wipe:
                 with suspend_capture():
-                    raw_input("\nTests finished. Press enter to wipe the test AiiDA environment.")
+                    input("\nTests finished. Press enter to wipe the test AiiDA environment.")
 
 @contextmanager
 def reset_after_run():
