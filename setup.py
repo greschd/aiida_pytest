@@ -33,7 +33,7 @@ if __name__ == '__main__':
         packages=find_packages(exclude=['aiida', 'plum']),
         include_package_data=True,
         install_requires=[
-            'aiida-core',
+            'aiida-core>=1.0.0a4',
             'pytest',
             'temporary',
             'pyyaml',
