@@ -80,7 +80,7 @@ def configure(pytestconfig, config_dict):
                     only_config=False,
                     db_host='localhost',
                     set_default=True,
-                    force=True,
+                    # force=True,
                 )
 
             from ._computer import setup_computer
