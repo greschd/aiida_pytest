@@ -22,7 +22,7 @@ if __name__ == '__main__':
         readme=README,
         author='Dominik Gresch',
         author_email='greschd@gmx.ch',
-        license='MIT',
+        license='Apache 2.0',
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Environment :: Plugins',
@@ -43,6 +43,7 @@ if __name__ == '__main__':
             'pyyaml',
             'fsc.export',
             'pgtest>=1.1',
+            'future',
         ],
         extras_require={
             ':python_version < "3"': ['chainmap', 'pathlib2']
