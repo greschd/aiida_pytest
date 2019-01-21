@@ -12,21 +12,25 @@ with open('./aiida_pytest/__init__.py') as f:
     match_expr = "__version__[^'\"]+(['\"])([^'\"]+)"
     version = re.search(match_expr, f.read()).group(2).strip()
 
+README = 'A module to simplify using pytest for AiiDA plugins'
+
 if __name__ == '__main__':
     setup(
         name='aiida-pytest',
         version=version,
-        description='Module to simplify using pytest for AiiDA plugins',
+        description=README,
+        readme=README,
         author='Dominik Gresch',
         author_email='greschd@gmx.ch',
         license='MIT',
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Environment :: Plugins',
-            'Framework :: AiiDA',
             'Intended Audience :: Science/Research',
             'License :: OSI Approved :: Apache Software License',
             'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: 3.6',
             'Topic :: Scientific/Engineering :: Physics'
         ],
         keywords='pytest aiida workflows',
