@@ -11,7 +11,6 @@ from aiida.cmdline.commands.cmd_code import setup_code as _setup_code
 
 from .contextmanagers import redirect_stdout
 
-
 def setup_code(
     label,
     description,

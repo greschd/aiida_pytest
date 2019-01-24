@@ -10,6 +10,7 @@ from ._process import *
 from ._configure import *
 from ._sample import *
 from ._compare import *
+from ._entrypoints import *
 from . import markers
 
-__all__ = ['markers'] + _process.__all__ + _configure.__all__ + _sample.__all__ + _compare.__all__
+__all__ = ['markers'] + _process.__all__ + _configure.__all__ + _sample.__all__ + _compare.__all__ + _entrypoints.__all__
