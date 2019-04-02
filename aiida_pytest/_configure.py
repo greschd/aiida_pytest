@@ -139,7 +139,7 @@ def configure(pytestconfig, config_dict):
 
 @contextmanager
 def reset_after_run():
-    config_folder = os.path.expanduser(aiida.common.setup.AIIDA_CONFIG_FOLDER)
+    config_folder = os.path.expanduser(aiida.manage.configuration.settings.AIIDA_CONFIG_FOLDER)
     config_save_folder = os.path.join(
         os.path.dirname(config_folder), '.aiida~'
     )

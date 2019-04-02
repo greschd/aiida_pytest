@@ -21,10 +21,10 @@ def test_configure_from_file(configure):
 
 
 def test_db_flushed(configure):
-    from aiida.orm.data.base import Str
+    from aiida.orm import Str
     test_string = 'this string should not be present when the test run starts'
     tag = 'Test string tag'
-    from aiida.orm.querybuilder import QueryBuilder
+    from aiida.orm import QueryBuilder
     qb = QueryBuilder()
     qb.append(Str, filters={'label': {'==': tag}})
     assert not qb.all()
