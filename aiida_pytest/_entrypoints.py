@@ -24,7 +24,7 @@ def check_entrypoints(configure):  # pylint: disable=unused-argument
 
     def inner(module_name):  # pylint: disable=missing-docstring
         from aiida.parsers import ParserFactory
-        from aiida.transport import TransportFactory
+        from aiida.transports import TransportFactory
         from aiida.plugins.factory import WorkflowFactory, CalculationFactory, DataFactory
         for entrypoint_name, factory in [
             ('aiida.workflows', WorkflowFactory),

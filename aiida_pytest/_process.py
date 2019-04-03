@@ -12,7 +12,7 @@ from fsc.export import export
 @pytest.fixture
 def get_process_builder(inputs_setup):
     def inner(calculation_string, code_string, single_core=True):
-        from aiida.orm import CalculationFactory
+        from aiida.plugins import CalculationFactory
         process = CalculationFactory(calculation_string).process()
         builder = process.get_builder()
         inputs_setup(
