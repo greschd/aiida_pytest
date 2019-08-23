@@ -36,7 +36,7 @@ def inputs_setup(set_code, set_single_core):
 @pytest.fixture
 def set_code():
     def inner(builder, code_string):
-        from aiida.orm.code import Code
+        from aiida.orm import Code
         builder.code = Code.get_from_string(code_string)
     return inner
 
@@ -55,7 +55,7 @@ def set_single_core():
 def assert_state():
     def inner(pid, state):
         from aiida.orm import load_node
-        from aiida.common.datastructures import calc_states
+        from aiida.common import calc_states
         from aiida.orm.calculation.work import WorkCalculation
         calc = load_node(pid)
         if isinstance(calc, WorkCalculation):
@@ -71,7 +71,7 @@ def assert_state():
 @pytest.fixture
 def assert_finished(assert_state):
     def inner(pid):
-        from aiida.common.datastructures import calc_states
+        from aiida.common import calc_states
         assert_state(pid, calc_states.FINISHED)
     return inner
 

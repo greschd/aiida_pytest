@@ -8,6 +8,8 @@ To get started, create a ``tests`` folder where your ``pytest`` tests will be lo
 from aiida_pytest import *
 ```
 
+TODO: update
+
 This defines the ``configure`` and ``configure_with_daemon`` fixtures.
 
 Also, you need to create an empty ``.aiida`` in the folder where you want to run your tests. Then, you need to ``export AIIDA_PATH='.'`` to make sure aiida is using this config folder. This is to make sure that the tests create a local configuration (that will be destroyed after the test) instead of running in your main AiiDA configuration.

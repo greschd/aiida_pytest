@@ -11,6 +11,6 @@ computers:
 codes:
   ls:
     description: ls
-    default_plugin: simpleplugins.templatereplacer
+    default_plugin: templatereplacer
     remote_computer: localhost
     remote_abspath: /bin/ls

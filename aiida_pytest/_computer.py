@@ -30,7 +30,6 @@ def setup_computer(
     description='',
     mpirun_command='mpirun -np {tot_num_mpiprocs}',
     num_cpus=1,
-    enabled=True,
     prepend_text=None,
     append_text=None
 ):
@@ -51,7 +50,6 @@ def setup_computer(
             work_dir=work_directory,
             shebang=shebang,
             mpirun_command=mpirun_command,
-            enabled=enabled,
             mpiprocs_per_machine=num_cpus,
             prepend_text=prepend_text or '',
             append_text=append_text or '',
@@ -61,7 +59,7 @@ def setup_computer(
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         configure_command.callback(
             computer=ComputerParamType()(name),
-            user=UserParamType()('aiida@localhost'),
+            user=UserParamType()('test@aiida.mail'),
             non_interactive=True,
             **configuration
         )
