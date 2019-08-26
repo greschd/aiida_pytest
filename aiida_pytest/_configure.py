@@ -141,10 +141,8 @@ def configure(pytestconfig, config_dict):
 
         if pytestconfig.option.print_status:
             with suspend_capture():
-                print('\n\nCalculation List:')
-                subprocess.call(['verdi', 'calculation', 'list', '-a'])
-                print('\nWork List:')
-                subprocess.call(['verdi', 'work', 'list', '-a'])
+                print('\n\nProcess List:')
+                subprocess.call(['verdi', 'process', 'list', '-a'])
         end_cmd = pytestconfig.option.end_cmd
         if end_cmd is not None:
             with suspend_capture():
@@ -153,8 +151,9 @@ def configure(pytestconfig, config_dict):
 
         if not pytestconfig.option.quiet_wipe:
             with suspend_capture():
+                print('\nAiiDA root directory: {}'.format(manager.root_dir))
                 input(
-                    "\nTests finished. Press enter to wipe the test AiiDA environment."
+                    "Tests finished. Press enter to wipe the test AiiDA environment."
                 )
 
 
