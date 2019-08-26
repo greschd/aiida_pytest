@@ -9,7 +9,6 @@ import copy
 import getpass
 
 import click
-# from click.testing import CliRunner
 from aiida.cmdline.params.types import PluginParamType, UserParamType, ComputerParamType
 from aiida.cmdline.commands.cmd_computer import (
     verdi_computer, computer_setup as _setup_computer, computer_configure as

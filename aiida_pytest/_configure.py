@@ -16,7 +16,6 @@ import yaml
 
 import aiida
 from aiida.manage.fixtures import fixture_manager
-# from aiida.cmdline.commands.cmd_daemon import start, stop
 import pytest
 from fsc.export import export
 
@@ -49,19 +48,18 @@ def get_queue_name_from_code(request, config_dict):
         return queue_name
     return inner
 
-# @export
-# @pytest.fixture(scope='session')
-# def configure_with_daemon(configure):
-#     with handle_daemon():
-#         yield
+@export
+@pytest.fixture(scope='session')
+def configure_with_daemon(configure):
+    subprocess.run(['verdi', 'daemon', 'start'], env=os.environ)
+    yield
+    subprocess.call(['verdi', 'daemon', 'stop'], env=os.environ)
 
 @export
 @pytest.fixture(scope='session')
 def configure(pytestconfig, config_dict):
     config = copy.deepcopy(config_dict)
     with fixture_manager() as manager:
-        # print(manager)
-        print('AiiDA root: ', manager.root_dir)
         os.environ['AIIDA_PATH'] = manager.root_dir
 
         from ._computer import setup_computer
@@ -148,12 +146,3 @@ def reset_submit_test_folder(config_folder):
     if os.path.isdir(submit_test_folder):
         # remove temp `submit_test` folder for not_submitted_to_daemon tests
         shutil.rmtree(submit_test_folder)
-
-
-# @contextmanager
-# def handle_daemon():
-#     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-#         start.callback(foreground=False, number=1)
-#     yield
-#     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-#         stop.callback(no_wait=False, all_profiles=False)
