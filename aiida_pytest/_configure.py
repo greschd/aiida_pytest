@@ -21,12 +21,31 @@ from fsc.export import export
 
 # from .contextmanagers import redirect_stdout
 
+
 @export
 def pytest_addoption(parser):
-    parser.addoption('--queue-name', action='store', help='Name of the queue used to submit calculations.')
-    parser.addoption('--quiet-wipe', action='store_true', help='Disable asking for input before wiping the test AiiDA environment.')
-    parser.addoption('--print-status', action='store_true', help='Print the calculation and work status before exiting.')
-    parser.addoption('--end-cmd', action='store', help='Command to run before the tear-down (with output capture suspended).')
+    parser.addoption(
+        '--queue-name',
+        action='store',
+        help='Name of the queue used to submit calculations.'
+    )
+    parser.addoption(
+        '--quiet-wipe',
+        action='store_true',
+        help='Disable asking for input before wiping the test AiiDA environment.'
+    )
+    parser.addoption(
+        '--print-status',
+        action='store_true',
+        help='Print the calculation and work status before exiting.'
+    )
+    parser.addoption(
+        '--end-cmd',
+        action='store',
+        help=
+        'Command to run before the tear-down (with output capture suspended).'
+    )
+
 
 @export
 @pytest.fixture(scope='session')
@@ -37,6 +56,7 @@ def config_dict():
         config = dict()
     return config
 
+
 @export
 @pytest.fixture(scope='session')
 def get_queue_name_from_code(request, config_dict):
@@ -46,14 +66,21 @@ def get_queue_name_from_code(request, config_dict):
             computer = config_dict['codes'][code]['remote_computer']
             queue_name = config_dict['computers'][computer]['queue_name']
         return queue_name
+
     return inner
+
 
 @export
 @pytest.fixture(scope='session')
 def configure_with_daemon(configure):
-    subprocess.run(['verdi', 'daemon', 'start'], env=os.environ)
+    subprocess.run(['verdi', 'daemon', 'start'],
+                   env=os.environ,
+                   stdout=subprocess.DEVNULL)
     yield
-    subprocess.call(['verdi', 'daemon', 'stop'], env=os.environ)
+    subprocess.run(['verdi', 'daemon', 'stop'],
+                   env=os.environ,
+                   stdout=subprocess.DEVNULL)
+
 
 @export
 @pytest.fixture(scope='session')
@@ -67,7 +94,8 @@ def configure(pytestconfig, config_dict):
         for name, kwargs in computers.items():
             setup_computer(
                 name=name,
-                **{k: v for k, v in kwargs.items() if k != 'queue_name'}
+                **{k: v
+                   for k, v in kwargs.items() if k != 'queue_name'}
             )
 
         from ._code import setup_code
@@ -85,10 +113,21 @@ def configure(pytestconfig, config_dict):
         yield
 
         # Handle compatibility break in pytest
-        capture_manager = pytest.config.pluginmanager.getplugin('capturemanager')
-        init = getattr(capture_manager, 'init_capturings', getattr(capture_manager, 'start_global_capturing', None))
-        suspend = getattr(capture_manager, 'suspendcapture', getattr(capture_manager, 'suspend_global_capture', None))
-        resume = getattr(capture_manager, 'resumecapture', getattr(capture_manager, 'resume_global_capture', None))
+        capture_manager = pytest.config.pluginmanager.getplugin(
+            'capturemanager'
+        )
+        init = getattr(
+            capture_manager, 'init_capturings',
+            getattr(capture_manager, 'start_global_capturing', None)
+        )
+        suspend = getattr(
+            capture_manager, 'suspendcapture',
+            getattr(capture_manager, 'suspend_global_capture', None)
+        )
+        resume = getattr(
+            capture_manager, 'resumecapture',
+            getattr(capture_manager, 'resume_global_capture', None)
+        )
 
         @contextmanager
         def suspend_capture():
@@ -114,11 +153,16 @@ def configure(pytestconfig, config_dict):
 
         if not pytestconfig.option.quiet_wipe:
             with suspend_capture():
-                input("\nTests finished. Press enter to wipe the test AiiDA environment.")
+                input(
+                    "\nTests finished. Press enter to wipe the test AiiDA environment."
+                )
+
 
 @contextmanager
 def reset_after_run():
-    config_folder = os.path.expanduser(aiida.manage.configuration.settings.AIIDA_CONFIG_FOLDER)
+    config_folder = os.path.expanduser(
+        aiida.manage.configuration.settings.AIIDA_CONFIG_FOLDER
+    )
     config_save_folder = os.path.join(
         os.path.dirname(config_folder), '.aiida~'
     )
