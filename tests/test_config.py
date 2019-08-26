@@ -8,8 +8,6 @@ import os
 import time
 import subprocess
 
-import aiida
-
 
 def test_configure_from_file(configure):
     from aiida.orm import QueryBuilder
