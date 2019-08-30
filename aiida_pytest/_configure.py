@@ -113,7 +113,7 @@ def configure(pytestconfig, config_dict):
         yield
 
         # Handle compatibility break in pytest
-        capture_manager = pytest.config.pluginmanager.getplugin(
+        capture_manager = pytestconfig.pluginmanager.getplugin(
             'capturemanager'
         )
         init = getattr(
