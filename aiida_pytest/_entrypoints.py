@@ -21,16 +21,12 @@ def check_entrypoints(configure):  # pylint: disable=unused-argument
     entrypoints through the corresponding factory works for the given (base)
     module name.
     """
-
     def inner(module_name):  # pylint: disable=missing-docstring
-        from aiida.parsers import ParserFactory
-        from aiida.transports import TransportFactory
-        from aiida.plugins.factory import WorkflowFactory, CalculationFactory, DataFactory
+        from aiida.plugins.factories import WorkflowFactory, CalculationFactory, DataFactory, ParserFactory, TransportFactory
         for entrypoint_name, factory in [
             ('aiida.workflows', WorkflowFactory),
             ('aiida.calculations', CalculationFactory),
-            ('aiida.parsers', ParserFactory),
-            ('aiida.data', DataFactory),
+            ('aiida.parsers', ParserFactory), ('aiida.data', DataFactory),
             ('aiida.transports', TransportFactory)
         ]:
             for entry_point in pkg_resources.iter_entry_points(
