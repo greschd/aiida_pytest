@@ -13,8 +13,7 @@ from fsc.export import export
 def get_process_builder(inputs_setup):
     def inner(calculation_string, code_string, single_core=True):
         from aiida.plugins import CalculationFactory
-        process = CalculationFactory(calculation_string).process()
-        builder = process.get_builder()
+        builder = CalculationFactory(calculation_string).get_builder()
         inputs_setup(
             builder,
             code_string=code_string,
@@ -44,7 +43,7 @@ def set_code():
 @pytest.fixture
 def set_single_core():
     def inner(builder):
-        builder.options = dict(
+        builder.metadata.options = dict(
             resources={'num_machines': 1, 'tot_num_mpiprocs': 1},
             withmpi=False
         )
