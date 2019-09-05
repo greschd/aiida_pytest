@@ -49,29 +49,26 @@ def set_single_core():
         )
     return inner
 
+# TODO: Check for uses of these fixtures, and if / how they need to be changed.
+
 @export
 @pytest.fixture
 def assert_state():
     def inner(pid, state):
         from aiida.orm import load_node
-        from aiida.common import calc_states
-        from aiida.orm.calculation.work import WorkCalculation
-        calc = load_node(pid)
-        if isinstance(calc, WorkCalculation):
-            if state == calc_states.FINISHED:
-                assert calc.exit_status == 0
-            else:
-                raise ValueError('Cannot check WorkCalculation for state {}'.format(state))
-        else:
-            assert calc.get_state() == state
+        from aiida.engine import ProcessState
+        if isinstance(state, ProcessState):
+            state = state.value
+        calc_node = load_node(pid)
+        assert calc_node.get_attribute('process_state') == state
     return inner
 
 @export
 @pytest.fixture
 def assert_finished(assert_state):
     def inner(pid):
-        from aiida.common import calc_states
-        assert_state(pid, calc_states.FINISHED)
+        from aiida.engine import ProcessState
+        assert_state(pid, ProcessState.FINISHED)
     return inner
 
 @export
