@@ -44,6 +44,7 @@ if __name__ == '__main__':
             'fsc.export',
             'pgtest>=1.1',
             'future',
+            'subprocess32'
         ],
         extras_require={
             ':python_version < "3"': ['chainmap', 'pathlib2']

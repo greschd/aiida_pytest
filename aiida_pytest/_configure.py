@@ -8,7 +8,7 @@ from __future__ import division, print_function, unicode_literals
 import os
 import copy
 import shutil
-import subprocess
+import subprocess32 as subprocess
 from builtins import input
 from contextlib import contextmanager
 
@@ -109,7 +109,7 @@ def configure(pytestconfig, config_dict):
         for group_name, kwargs in pseudo_families.items():
             setup_pseudo_family(group_name=group_name, **kwargs)
 
-        # aiida.try_load_dbenv()
+        # aiida.load_profile()
         yield
 
         # Handle compatibility break in pytest

@@ -6,7 +6,7 @@
 
 import os
 import time
-import subprocess
+import subprocess32 as subprocess
 
 
 def test_configure_from_file(configure):
