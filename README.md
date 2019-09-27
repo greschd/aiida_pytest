@@ -8,9 +8,25 @@ To get started, create a ``tests`` folder where your ``pytest`` tests will be lo
 from aiida_pytest import *
 ```
 
-This defines the ``configure`` and ``configure_with_daemon`` fixtures.
+This defines the ``configure`` and ``configure_with_daemon`` fixtures. To set up computers and codes for the test run, you need a ``config.yml`` file in the ``tests`` folder (and run ``pytest`` from there). The following example config file sets up ``localhost`` and the ``bands-inspect`` code:
 
-Also, you need to create an empty ``.aiida`` in the folder where you want to run your tests. Then, you need to ``export AIIDA_PATH='.'`` to make sure aiida is using this config folder. This is to make sure that the tests create a local configuration (that will be destroyed after the test) instead of running in your main AiiDA configuration.
+```
+computers:
+  localhost:
+    hostname: localhost
+    description: localhost
+    transport: local
+    scheduler: direct
+    work_directory: /tmp/test_aiida
+    prepend_text: 'unset PYTHONPATH'
+
+codes:
+  bands_inspect:
+    description: bands_inspect code
+    default_plugin: bands_inspect.difference
+    remote_computer: localhost
+    remote_abspath: /home/a-dogres/.virtualenvs/bands-inspect/bin/bands-inspect
+```
 
 **Note:** ``aiida-pytest`` is not compatible with the ``aiida-xdist`` plugin, since the fixtures with ``scope=session`` are then called for each running worker.
 
