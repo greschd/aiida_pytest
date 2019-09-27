@@ -3,6 +3,7 @@
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
 
+import os
 import re
 import sys
 from setuptools import setup, find_packages
@@ -19,6 +20,12 @@ if __name__ == '__main__':
         name='aiida-pytest',
         version=version,
         description=README,
+        long_description=open(
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), 'README.md'
+            )
+        ).read(),
+        long_description_content_type="text/markdown",
         readme=README,
         author='Dominik Gresch',
         author_email='greschd@gmx.ch',
