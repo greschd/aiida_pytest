@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# © 2017-2019, ETH Zurich, Institut für Theoretische Physik
+# Author: Dominik Gresch <greschd@gmx.ch>
+
 import os
 
-from aiida.cmdline.verdilib import Code
+from aiida.cmdline.params.types import ComputerParamType, PluginParamType
+from aiida.cmdline.commands.cmd_code import setup_code as _setup_code
 
-from ._input_helper import InputHelper
-from .contextmanagers import redirect_stdin, redirect_stdout
+from .contextmanagers import redirect_stdout
 
 def setup_code(
     label,
@@ -18,17 +21,15 @@ def setup_code(
     prepend_text='',
     append_text=''
 ):
-    code_input = InputHelper(input=
-        [
-            label,
-            description,
-            str(local),
-            default_plugin,
-            remote_computer,
-            remote_abspath
-        ] + prepend_text.splitlines() + [None] +
-        append_text.splitlines() + [None]
-    )
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        with redirect_stdin(code_input):
-            Code().code_setup()
+        _setup_code.callback(
+            label=label,
+            description=description,
+            input_plugin=PluginParamType(group='calculations')(default_plugin),
+            computer=ComputerParamType()(remote_computer),
+            remote_abs_path=remote_abspath,
+            on_computer=not local,
+            prepend_text=prepend_text,
+            append_text=append_text,
+            non_interactive=True,
+        )

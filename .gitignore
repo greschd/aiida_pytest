@@ -2,3 +2,6 @@
 *.egg*
 .cache
 .ropeproject
+.pytest_cache
+dist
+.vscode

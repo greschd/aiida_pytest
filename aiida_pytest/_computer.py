@@ -1,88 +1,64 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# © 2017-2019, ETH Zurich, Institut für Theoretische Physik
+# Author: Dominik Gresch <greschd@gmx.ch>
+
 import os
+import copy
 import getpass
 
-from aiida.cmdline.verdilib import Computer
+import click
+from aiida.cmdline.params.types import PluginParamType, UserParamType, ComputerParamType
+from aiida.cmdline.commands.cmd_computer import (
+    verdi_computer, computer_setup as _setup_computer, computer_configure as
+    _configure_computer
+)
 
-from ._input_helper import InputHelper
-from .contextmanagers import redirect_stdin, redirect_stdout
+from .contextmanagers import redirect_stdout
+
 
 def setup_computer(
-        name,
-        hostname,
-        transport,
-        scheduler,
-        work_directory,
-        shebang='#!/bin/bash',
-        configuration={'username': getpass.getuser()},
-        description='',
-        mpirun_command='mpirun -np {tot_num_mpiprocs}',
-        num_cpus=1,
-        enabled=True,
-        prepend_text=None,
-        append_text=None
-):
-    computer_input = InputHelper(input=[
-        name,
-        hostname,
-        description,
-        str(enabled),
-        transport,
-        scheduler,
-        shebang,
-        work_directory,
-        mpirun_command,
-        str(num_cpus),
-        prepend_text,
-        append_text,
-    ])
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        with redirect_stdin(computer_input):
-            Computer().computer_setup()
-    if transport == 'local':
-        configure_localhost(name)
-    else:
-        configure_computer(name, **configuration)
-
-def configure_localhost(name):
-    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        Computer().computer_configure(name)
-
-def configure_computer(
     name,
-    username='',
-    port=22,
-    look_for_keys=True,
-    key_filename='',
-    timeout=60,
-    allow_agent=True,
-    proxy_command='',
-    compress=True,
-    gss_auth=False,
-    gss_kex=False,
-    gss_deleg_creds=False,
-    gss_host='',
-    load_system_host_keys=True,
-    key_policy='RejectPolicy',
+    hostname,
+    transport,
+    scheduler,
+    work_directory,
+    shebang='#!/bin/bash',
+    configuration={},
+    description='',
+    mpirun_command='mpirun -np {tot_num_mpiprocs}',
+    num_cpus=1,
+    prepend_text=None,
+    append_text=None
 ):
-    configure_input = InputHelper(input=[
-        username,
-        str(port),
-        str(look_for_keys),
-        key_filename,
-        str(timeout),
-        str(allow_agent),
-        proxy_command,
-        str(compress),
-        str(gss_auth),
-        str(gss_kex),
-        str(gss_deleg_creds),
-        str(gss_host),
-        str(load_system_host_keys),
-        key_policy
-    ])
+    configuration = copy.deepcopy(configuration)
+    if transport == 'ssh':
+        configuration.setdefault('username', getpass.getuser())
+        configuration.setdefault('look_for_keys', True)
+        configuration.setdefault('allow_agent', True)
+        configuration.setdefault('load_system_host_keys', True)
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
-        with redirect_stdin(configure_input):
-            Computer().computer_configure(name)
+        click.Context(verdi_computer).invoke(
+            _setup_computer,
+            label=name,
+            hostname=hostname,
+            transport=PluginParamType(group='transports')(transport),
+            scheduler=PluginParamType(group='schedulers')(scheduler),
+            description=description,
+            work_dir=work_directory,
+            shebang=shebang,
+            mpirun_command=mpirun_command,
+            mpiprocs_per_machine=num_cpus,
+            prepend_text=prepend_text or '',
+            append_text=append_text or '',
+            non_interactive=True,
+        )
+    configure_command = _configure_computer.commands[transport]
+    with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
+        configure_command.callback(
+            computer=ComputerParamType()(name),
+            user=UserParamType()('test@aiida.mail'),
+            non_interactive=True,
+            **configuration
+        )
