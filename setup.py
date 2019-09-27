@@ -12,7 +12,7 @@ with open('./aiida_pytest/__init__.py') as f:
     match_expr = "__version__[^'\"]+(['\"])([^'\"]+)"
     version = re.search(match_expr, f.read()).group(2).strip()
 
-README = 'A module to simplify using pytest for AiiDA plugins'
+README = 'A module to simplify using pytest for AiiDA plugins.'
 
 if __name__ == '__main__':
     setup(
@@ -31,20 +31,18 @@ if __name__ == '__main__':
             'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.6',
-            'Topic :: Scientific/Engineering :: Physics'
+            'Programming Language :: Python :: 3.7',
+            'Topic :: Scientific/Engineering :: Physics',
+            'Topic :: Software Development :: Testing',
+            'Framework :: Pytest',
+            'Framework :: AiiDA',
         ],
         keywords='pytest aiida workflows',
         packages=find_packages(exclude=['aiida', 'plum']),
         include_package_data=True,
         install_requires=[
-            'aiida-core>=1.0.0a4',
-            'pytest',
-            'temporary',
-            'pyyaml',
-            'fsc.export',
-            'pgtest>=1.1',
-            'future',
-            'subprocess32'
+            'aiida-core>=1.0.0b6,<2.0.0', 'pytest', 'pyyaml', 'fsc.export',
+            'pgtest>=1.1', 'future', 'subprocess32'
         ],
         extras_require={
             ':python_version < "3"': ['chainmap', 'pathlib2']
