@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# © 2017-2019, ETH Zurich, Institut für Theoretische Physik
+# Author: Dominik Gresch <greschd@gmx.ch>
+
 import sys
 import contextlib
 
@@ -10,10 +13,3 @@ def redirect_stdout(target):
     sys.stdout = target
     yield
     sys.stdout = original
-
-@contextlib.contextmanager
-def redirect_stdin(target):
-    original = sys.stdin
-    sys.stdin = target
-    yield
-    sys.stdin = original

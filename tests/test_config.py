@@ -1,45 +1,45 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import io
+# © 2017-2019, ETH Zurich, Institut für Theoretische Physik
+# Author: Dominik Gresch <greschd@gmx.ch>
+
 import os
 import time
+import subprocess32 as subprocess
 
-import aiida
-from aiida.cmdline.commands.daemon import status
-import pytest
-from click.testing import CliRunner
-
-from aiida_pytest.contextmanagers import redirect_stdout
 
 def test_configure_from_file(configure):
-    from aiida.orm.implementation.django.user import DjangoUserCollection
-    user = DjangoUserCollection().all()[0]
+    from aiida.orm import QueryBuilder
+    from aiida.orm import User
+    qb = QueryBuilder()
+    qb.append(User)
+    user = qb.first()[0]
     assert user.first_name == 'AiiDA'
 
+
 def test_db_flushed(configure):
-    from aiida.orm.data.base import Str
+    from aiida.orm import Str
     test_string = 'this string should not be present when the test run starts'
     tag = 'Test string tag'
-    from aiida.orm.querybuilder import QueryBuilder
+    from aiida.orm import QueryBuilder
     qb = QueryBuilder()
-    qb.append(
-        Str,
-        filters={'label': {'==': tag}}
-    )
+    qb.append(Str, filters={'label': {'==': tag}})
     assert not qb.all()
     str_obj = Str(test_string)
     str_obj.label = tag
     str_obj.store()
 
+
 def test_daemon_running(configure_with_daemon):
-    from aiida.cmdline.verdilib import Daemon
     start_time = time.time()
     max_timeout = 5
-    runner = CliRunner()
     while time.time() - start_time < max_timeout:
-        res = runner.invoke(status)
-        if 'Daemon is running as PID' in res.output:
+        res = subprocess.run(['verdi', 'daemon', 'status'], env=os.environ, encoding='utf-8', stdout=subprocess.PIPE)
+        if 'Daemon is running as PID' in res.stdout:
             break
+
     else:
-        raise ValueError('Daemon not running after {} seconds. Status: {}'.format(max_timeout, res.output))
+        raise ValueError(
+            'Daemon not running after {} seconds. Status: {}'.format(
+                max_timeout, res.output))
