@@ -15,12 +15,14 @@ from contextlib import contextmanager
 import yaml
 
 import aiida
-from aiida.manage.fixtures import fixture_manager
+from aiida.manage.tests.pytest_fixtures import aiida_profile
+
 import pytest
 from fsc.export import export
 
 # from .contextmanagers import redirect_stdout
 
+__all__ = ['aiida_profile'] # Need to export the fixtures that we depend on.
 
 @export
 def pytest_addoption(parser):
@@ -84,77 +86,76 @@ def configure_with_daemon(configure):
 
 @export
 @pytest.fixture(scope='session')
-def configure(pytestconfig, config_dict):
+def configure(pytestconfig, config_dict, aiida_profile):
     config = copy.deepcopy(config_dict)
-    with fixture_manager() as manager:
-        os.environ['AIIDA_PATH'] = manager.root_dir
+    os.environ['AIIDA_PATH'] = aiida_profile._manager.root_dir
 
-        from ._computer import setup_computer
-        computers = config.get('computers', {})
-        for name, kwargs in computers.items():
-            setup_computer(
-                name=name,
-                **{k: v
-                   for k, v in kwargs.items() if k != 'queue_name'}
-            )
+    from ._computer import setup_computer
+    computers = config.get('computers', {})
+    for name, kwargs in computers.items():
+        setup_computer(
+            name=name,
+            **{k: v
+                for k, v in kwargs.items() if k != 'queue_name'}
+        )
 
-        from ._code import setup_code
-        codes = config.get('codes', {})
-        for label, kwargs in codes.items():
-            setup_code(label=label, **kwargs)
+    from ._code import setup_code
+    codes = config.get('codes', {})
+    for label, kwargs in codes.items():
+        setup_code(label=label, **kwargs)
 
-        # with same pattern setup test psf- pseudo family
-        from ._pseudo_family import setup_pseudo_family
-        pseudo_families = config.get('pseudo_families', {})
-        for group_name, kwargs in pseudo_families.items():
-            setup_pseudo_family(group_name=group_name, **kwargs)
+    # with same pattern setup test psf- pseudo family
+    from ._pseudo_family import setup_pseudo_family
+    pseudo_families = config.get('pseudo_families', {})
+    for group_name, kwargs in pseudo_families.items():
+        setup_pseudo_family(group_name=group_name, **kwargs)
 
-        # aiida.load_profile()
+    # aiida.load_profile()
+    yield
+
+    # Handle compatibility break in pytest
+    capture_manager = pytestconfig.pluginmanager.getplugin(
+        'capturemanager'
+    )
+    init = getattr(
+        capture_manager, 'init_capturings',
+        getattr(capture_manager, 'start_global_capturing', None)
+    )
+    suspend = getattr(
+        capture_manager, 'suspendcapture',
+        getattr(capture_manager, 'suspend_global_capture', None)
+    )
+    resume = getattr(
+        capture_manager, 'resumecapture',
+        getattr(capture_manager, 'resume_global_capture', None)
+    )
+
+    @contextmanager
+    def suspend_capture():
+        try:
+            init()
+        except AssertionError:
+            pass
+        suspend(in_=True)
         yield
+        resume()
 
-        # Handle compatibility break in pytest
-        capture_manager = pytestconfig.pluginmanager.getplugin(
-            'capturemanager'
-        )
-        init = getattr(
-            capture_manager, 'init_capturings',
-            getattr(capture_manager, 'start_global_capturing', None)
-        )
-        suspend = getattr(
-            capture_manager, 'suspendcapture',
-            getattr(capture_manager, 'suspend_global_capture', None)
-        )
-        resume = getattr(
-            capture_manager, 'resumecapture',
-            getattr(capture_manager, 'resume_global_capture', None)
-        )
+    if pytestconfig.option.print_status:
+        with suspend_capture():
+            print('\n\nProcess List:')
+            subprocess.call(['verdi', 'process', 'list', '-a'])
+    end_cmd = pytestconfig.option.end_cmd
+    if end_cmd is not None:
+        with suspend_capture():
+            print("Executing '{}'".format(end_cmd))
+            subprocess.call(end_cmd, shell=True)
 
-        @contextmanager
-        def suspend_capture():
-            try:
-                init()
-            except AssertionError:
-                pass
-            suspend(in_=True)
-            yield
-            resume()
-
-        if pytestconfig.option.print_status:
-            with suspend_capture():
-                print('\n\nProcess List:')
-                subprocess.call(['verdi', 'process', 'list', '-a'])
-        end_cmd = pytestconfig.option.end_cmd
-        if end_cmd is not None:
-            with suspend_capture():
-                print("Executing '{}'".format(end_cmd))
-                subprocess.call(end_cmd, shell=True)
-
-        if not pytestconfig.option.quiet_wipe:
-            with suspend_capture():
-                print('\nAiiDA root directory: {}'.format(manager.root_dir))
-                input(
-                    "Tests finished. Press enter to wipe the test AiiDA environment."
-                )
+    if not pytestconfig.option.quiet_wipe:
+        with suspend_capture():
+            print('\nAiiDA root directory: {}'.format(aiida_profile._manager.root_dir))
+            input(
+                "Tests finished. Press enter to wipe the test AiiDA environment."
+            )
 
 
 @contextmanager

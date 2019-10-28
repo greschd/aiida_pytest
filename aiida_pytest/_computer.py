@@ -58,7 +58,7 @@ def setup_computer(
     with open(os.devnull, 'w') as devnull, redirect_stdout(devnull):
         configure_command.callback(
             computer=ComputerParamType()(name),
-            user=UserParamType()('test@aiida.mail'),
+            user=UserParamType()('tests@aiida.mail'),
             non_interactive=True,
             **configuration
         )

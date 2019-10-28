@@ -48,7 +48,7 @@ if __name__ == '__main__':
         packages=find_packages(exclude=['aiida', 'plum']),
         include_package_data=True,
         install_requires=[
-            'aiida-core>=1.0.0b6,<2.0.0', 'pytest', 'pyyaml', 'fsc.export',
+            'aiida-core>=1.0.0,<2.0.0', 'pytest', 'pyyaml', 'fsc.export',
             'pgtest>=1.1', 'future', 'subprocess32'
         ],
         extras_require={
