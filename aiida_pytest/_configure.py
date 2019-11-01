@@ -3,7 +3,7 @@
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
 
-from __future__ import division, print_function, unicode_literals
+from __future__ import division, print_function
 
 import os
 import copy
@@ -20,7 +20,6 @@ from aiida.manage.tests.pytest_fixtures import aiida_profile
 import pytest
 from fsc.export import export
 
-# from .contextmanagers import redirect_stdout
 
 __all__ = ['aiida_profile'] # Need to export the fixtures that we depend on.
 
