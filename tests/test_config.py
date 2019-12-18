@@ -6,7 +6,9 @@
 
 import os
 import time
-import subprocess32 as subprocess
+import subprocess
+
+from aiida.manage.tests import get_test_profile_name
 
 
 def test_configure_from_file(configure):
@@ -35,11 +37,21 @@ def test_daemon_running(configure_with_daemon):
     start_time = time.time()
     max_timeout = 5
     while time.time() - start_time < max_timeout:
-        res = subprocess.run(['verdi', 'daemon', 'status'], env=os.environ, encoding='utf-8', stdout=subprocess.PIPE)
+        profile_name = get_test_profile_name()
+        if profile_name:
+            profile_args = ('-p', profile_name)
+        else:
+            profile_args = tuple()
+        res = subprocess.run(['verdi', *profile_args, 'daemon', 'status'],
+                             env=os.environ,
+                             encoding='utf-8',
+                             stdout=subprocess.PIPE)
         if 'Daemon is running as PID' in res.stdout:
             break
 
     else:
         raise ValueError(
             'Daemon not running after {} seconds. Status: {}'.format(
-                max_timeout, res.output))
+                max_timeout, res.output
+            )
+        )

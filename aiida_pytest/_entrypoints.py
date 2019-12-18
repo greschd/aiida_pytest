@@ -10,10 +10,10 @@ parsers, data, transports) are loadable through the corresponding factory.
 import pkg_resources
 
 import pytest
-from fsc.export import export
+
+__all__ = ('check_entrypoints', )
 
 
-@export
 @pytest.fixture
 def check_entrypoints(configure):  # pylint: disable=unused-argument
     """

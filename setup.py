@@ -35,10 +35,10 @@ if __name__ == '__main__':
             'Environment :: Plugins',
             'Intended Audience :: Science/Research',
             'License :: OSI Approved :: Apache Software License',
-            'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.7',
+            'Programming Language :: Python :: 3.8',
             'Topic :: Scientific/Engineering :: Physics',
             'Topic :: Software Development :: Testing',
             'Framework :: Pytest',
@@ -47,11 +47,8 @@ if __name__ == '__main__':
         keywords='pytest aiida workflows',
         packages=find_packages(exclude=['aiida', 'plum']),
         include_package_data=True,
+        python_requires=">=3.6",
         install_requires=[
-            'aiida-core>=1.0.0,<2.0.0', 'pytest', 'pyyaml', 'fsc.export',
-            'pgtest>=1.1', 'future', 'subprocess32'
+            'aiida-core>=1.0.0,<2.0.0', 'pytest', 'pyyaml', 'pgtest>=1.1'
         ],
-        extras_require={
-            ':python_version < "3"': ['chainmap', 'pathlib2']
-        }
     )

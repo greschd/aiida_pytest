@@ -3,27 +3,30 @@
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
 
-from __future__ import division, print_function
-
 import os
 import copy
 import shutil
-import subprocess32 as subprocess
+import subprocess
 from builtins import input
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 
 import yaml
 
 import aiida
+from aiida.manage.tests import get_test_profile_name
 from aiida.manage.tests.pytest_fixtures import aiida_profile
 
 import pytest
-from fsc.export import export
+
+# Need to export the fixtures that we depend on.
+# NOTE: This is a workaround for the incorrect way of using the
+# plugin (wildcard import) instead of specifying it as pytest plugin.
+__all__ = (
+    'aiida_profile', 'pytest_addoption', 'config_dict',
+    'get_queue_name_from_code', 'configure_with_daemon', 'configure'
+)
 
 
-__all__ = ['aiida_profile'] # Need to export the fixtures that we depend on.
-
-@export
 def pytest_addoption(parser):
     parser.addoption(
         '--queue-name',
@@ -48,7 +51,6 @@ def pytest_addoption(parser):
     )
 
 
-@export
 @pytest.fixture(scope='session')
 def config_dict():
     with open(os.path.abspath('config.yml'), 'r') as f:
@@ -58,7 +60,6 @@ def config_dict():
     return config
 
 
-@export
 @pytest.fixture(scope='session')
 def get_queue_name_from_code(request, config_dict):
     def inner(code):
@@ -71,23 +72,28 @@ def get_queue_name_from_code(request, config_dict):
     return inner
 
 
-@export
 @pytest.fixture(scope='session')
 def configure_with_daemon(configure):
-    subprocess.run(['verdi', 'daemon', 'start'],
+    profile_name = get_test_profile_name()
+    if profile_name is not None:
+        profile_args = ('-p', profile_name)
+    else:
+        profile_args = tuple()
+    subprocess.run(['verdi', *profile_args, 'daemon', 'start'],
                    env=os.environ,
                    stdout=subprocess.DEVNULL)
     yield
-    subprocess.run(['verdi', 'daemon', 'stop'],
+    subprocess.run(['verdi', *profile_args, 'daemon', 'stop'],
                    env=os.environ,
                    stdout=subprocess.DEVNULL)
 
 
-@export
 @pytest.fixture(scope='session')
 def configure(pytestconfig, config_dict, aiida_profile):
+    aiida_profile.reset_db()
     config = copy.deepcopy(config_dict)
-    os.environ['AIIDA_PATH'] = aiida_profile._manager.root_dir
+    with suppress(AttributeError):
+        os.environ['AIIDA_PATH'] = aiida_profile._manager.root_dir
 
     from ._computer import setup_computer
     computers = config.get('computers', {})
@@ -95,7 +101,7 @@ def configure(pytestconfig, config_dict, aiida_profile):
         setup_computer(
             name=name,
             **{k: v
-                for k, v in kwargs.items() if k != 'queue_name'}
+               for k, v in kwargs.items() if k != 'queue_name'}
         )
 
     from ._code import setup_code
@@ -113,9 +119,7 @@ def configure(pytestconfig, config_dict, aiida_profile):
     yield
 
     # Handle compatibility break in pytest
-    capture_manager = pytestconfig.pluginmanager.getplugin(
-        'capturemanager'
-    )
+    capture_manager = pytestconfig.pluginmanager.getplugin('capturemanager')
     init = getattr(
         capture_manager, 'init_capturings',
         getattr(capture_manager, 'start_global_capturing', None)
@@ -131,10 +135,8 @@ def configure(pytestconfig, config_dict, aiida_profile):
 
     @contextmanager
     def suspend_capture():
-        try:
+        with suppress(AssertionError):
             init()
-        except AssertionError:
-            pass
         suspend(in_=True)
         yield
         resume()
@@ -151,7 +153,13 @@ def configure(pytestconfig, config_dict, aiida_profile):
 
     if not pytestconfig.option.quiet_wipe:
         with suspend_capture():
-            print('\nAiiDA root directory: {}'.format(aiida_profile._manager.root_dir))
+            print("\n")
+            with suppress(AttributeError):
+                print(
+                    'AiiDA root directory: {}'.format(
+                        aiida_profile._manager.root_dir
+                    )
+                )
             input(
                 "Tests finished. Press enter to wipe the test AiiDA environment."
             )

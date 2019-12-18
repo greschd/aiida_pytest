@@ -4,9 +4,9 @@
 # Author: Dominik Gresch <greschd@gmx.ch>
 
 import pytest
-from fsc.export import export
 
-@export
+__all__ = ("assert_outputs_equal", )
+
 @pytest.fixture
 def assert_outputs_equal():
     def inner(output1, output2):
