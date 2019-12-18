@@ -1,3 +1,5 @@
+**NOTE:** The ``aiida-pytest`` package is in maintenance mode: bugs will continue to be fixed for the foreseeable future, but no new features will be implemented. Users considering using ``aiida-pytest`` are **strongly** encouraged to use the built-in AiiDA fixtures instead.
+
 # aiida-pytest
 
 This is a helper to enable testing AiiDA plugins with ``pytest``. The main purpose is to create a fixture which sets up a temporary AiiDA database and user, and simplify setting up the computers and calculations.
