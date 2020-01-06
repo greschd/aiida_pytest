@@ -49,12 +49,19 @@ def pytest_addoption(parser):
         help=
         'Command to run before the tear-down (with output capture suspended).'
     )
+    parser.addoption(
+        '--aiida-pytest-conf-file',
+        action='store',
+        help=
+        'Path of the aiida-pytest config file to be used.'
+    )
 
 
 @pytest.fixture(scope='session')
-def config_dict():
-    with open(os.path.abspath('config.yml'), 'r') as f:
-        config = yaml.load(f)
+def config_dict(request):
+    path = request.config.getoption('--aiida-pytest-conf-file') or os.path.abspath('config.yml')
+    with open(path, 'r') as f:
+        config = yaml.safe_load(f)
     if config is None:
         config = dict()
     return config
