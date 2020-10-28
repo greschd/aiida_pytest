@@ -6,6 +6,7 @@
 import os
 import copy
 import shutil
+import pathlib
 import subprocess
 from builtins import input
 from contextlib import contextmanager, suppress
@@ -52,15 +53,18 @@ def pytest_addoption(parser):
     parser.addoption(
         '--aiida-pytest-conf-file',
         action='store',
-        help=
-        'Path of the aiida-pytest config file to be used.'
+        help='Path of the aiida-pytest config file to be used.'
     )
 
 
 @pytest.fixture(scope='session')
-def config_dict(request):
-    path = request.config.getoption('--aiida-pytest-conf-file') or os.path.abspath('config.yml')
-    with open(path, 'r') as f:
+def config_dict(request, pytestconfig):
+    config_path = pathlib.Path(
+        request.config.getoption('--aiida-pytest-conf-file') or 'config.yml'
+    )
+    if not (config_path.exists() or config_path.is_absolute()):
+        config_path = pytestconfig.rootpath / config_path
+    with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
     if config is None:
         config = dict()
